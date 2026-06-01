@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <title>Cruzamento de Figurinhas</title>
+    <title>FiguriMatch</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -28,11 +28,9 @@
 
         body {
             font-family: 'Inter', sans-serif;
-
             background:
                 radial-gradient(circle at top left, #1e3a8a 0%, transparent 35%),
                 linear-gradient(135deg, #020617, #0f172a, #111827);
-
             color: var(--text);
             padding: 20px;
             min-height: 100vh;
@@ -48,25 +46,31 @@
             margin-bottom: 28px;
         }
 
-        .author {
-            font-size: .72rem;
-            letter-spacing: 2px;
-            color: #64748b;
-            margin-bottom: 12px;
+        .brand {
+            text-align: center;
+            margin-bottom: 14px;
         }
 
-        .author span {
-            display: block;
-            margin-top: 6px;
-            font-size: .95rem;
-            font-weight: 700;
-            color: #cbd5e1;
-        }
-
-        .header h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
+        .brand h1 {
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
             font-weight: 800;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .brand h1 sup {
+            font-size: .8rem;
+            color: #94a3b8;
+            margin-left: 4px;
+            vertical-align: super;
+        }
+
+        .author {
+            font-size: .78rem;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
         }
 
         .header p {
@@ -201,6 +205,30 @@
             color: #22c55e;
         }
 
+        .recommendations {
+            margin-top: 22px;
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(34, 197, 94, .08);
+            border: 1px solid rgba(34, 197, 94, .18);
+        }
+
+        .recommendations h3 {
+            margin-bottom: 12px;
+            color: #22c55e;
+            font-size: 1rem;
+        }
+
+        .recommendations-list {
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: .95rem;
+        }
+
+        .recommendation-item {
+            margin-bottom: 8px;
+        }
+
         .floating {
             display: none;
         }
@@ -216,19 +244,15 @@
             gap: 10px;
 
             padding: 14px 18px;
-
             background: var(--whatsapp);
             color: white;
-
             border-radius: 999px;
 
             font-weight: 800;
             font-size: .95rem;
-
             text-decoration: none;
 
             box-shadow: 0 12px 30px rgba(37, 211, 102, .35);
-
             transition: transform .2s ease, box-shadow .2s ease;
         }
 
@@ -259,12 +283,19 @@
             line-height: 1.8;
         }
 
-        .footer-sub a {
-            color: #60a5fa;
-            text-decoration: none;
+        .footer-dev {
+            margin-top: 8px;
+            font-size: .82rem;
+            color: #64748b;
+            letter-spacing: .8px;
+            text-transform: uppercase;
         }
 
         @media(max-width:900px) {
+            body {
+                padding-bottom: 96px;
+            }
+
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -288,17 +319,32 @@
             .floating {
                 display: flex;
                 position: fixed;
-                bottom: 18px;
-                left: 50%;
-                transform: translateX(-50%);
+                bottom: 14px;
+                left: 14px;
+                right: 14px;
                 z-index: 999;
+                gap: 10px;
+            }
+
+            .floating button {
+                width: calc(50% - 5px);
+                padding: 14px 12px;
+                border-radius: 999px;
             }
 
             .whatsapp-btn {
+                left: calc(50% + 5px);
                 right: 14px;
-                bottom: 78px;
-                padding: 13px 15px;
+                bottom: 14px;
+                z-index: 1000;
+
+                justify-content: center;
+                padding: 14px 12px;
                 font-size: .85rem;
+            }
+
+            .whatsapp-btn span {
+                font-size: 1rem;
             }
         }
     </style>
@@ -310,12 +356,13 @@
 
         <div class="header">
 
-            <div class="author">
-                DESENVOLVIDO POR
-                <span>Frederico Braga</span>
-            </div>
+            <div class="brand">
+                <h1>FiguriMatch <sup>©</sup></h1>
 
-            <h1>Cruzamento de Figurinhas</h1>
+                <div class="author">
+                    Desenvolvido por Frederico Braga
+                </div>
+            </div>
 
             <p>
                 Compare listas de figurinhas e descubra automaticamente as possíveis trocas.
@@ -355,7 +402,7 @@
                     Colar
                 </button>
 
-                <h2>Suas repetidas</h2>
+                <h2>Repetidas</h2>
 
                 <textarea id="mine"></textarea>
 
@@ -367,7 +414,7 @@
                     Colar
                 </button>
 
-                <h2>Faltantes do amigo</h2>
+                <h2>Faltantes</h2>
 
                 <textarea id="friend"></textarea>
 
@@ -402,11 +449,15 @@
         <div class="footer">
 
             <div class="footer-main">
-                Frederico Braga
+                FiguriMatch ©
             </div>
 
             <div class="footer-sub">
                 Ferramenta para comparação de figurinhas • Copa 2026
+            </div>
+
+            <div class="footer-dev">
+                Desenvolvido por Frederico Braga
             </div>
 
         </div>
@@ -505,6 +556,66 @@
             return groups;
         }
 
+        function buildTradeRecommendations(result, faltantes) {
+            const faltantesGrouped = groupResults(faltantes);
+
+            const recommendations = result.map(item => {
+                const [prefix] = item.split(" ");
+
+                const missingCount = faltantesGrouped[prefix]
+                    ? faltantesGrouped[prefix].length
+                    : 999;
+
+                return {
+                    sticker: item,
+                    prefix: prefix,
+                    missingCount: missingCount
+                };
+            });
+
+            recommendations.sort((a, b) => {
+                if (a.missingCount !== b.missingCount) {
+                    return a.missingCount - b.missingCount;
+                }
+
+                return a.sticker.localeCompare(b.sticker);
+            });
+
+            if (recommendations.length === 0) {
+                return "";
+            }
+
+            let html = `
+                <div class="recommendations">
+                    <h3>Recomendações de troca</h3>
+
+                    <div class="recommendations-list">
+            `;
+
+            recommendations.forEach((item, index) => {
+                let reason = "";
+
+                if (item.missingCount === 1) {
+                    reason = `fecha <b>${item.prefix}</b>`;
+                } else {
+                    reason = `ajuda em <b>${item.prefix}</b>, onde ainda faltam ${item.missingCount} figurinhas`;
+                }
+
+                html += `
+                    <div class="recommendation-item">
+                        <b>${index + 1}. Pegue ${item.sticker}</b> — ${reason}.
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
         function updateCounters() {
             const mine = extractStickers(
                 document.getElementById("mine").value
@@ -531,7 +642,7 @@
             );
 
             if (mine.length === 0) {
-                alert("Insira suas repetidas");
+                alert("Insira as repetidas");
                 return;
             }
 
@@ -556,6 +667,10 @@
 
         function renderResult(result) {
             const box = document.getElementById("result");
+
+            const faltantes = extractStickers(
+                document.getElementById("friend").value
+            );
 
             if (result.length === 0) {
                 box.innerHTML = `
@@ -598,6 +713,8 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
 
 `;
 
+            const recommendationsHtml = buildTradeRecommendations(result, faltantes);
+
             box.innerHTML = `
                 <div style="
                     display:flex;
@@ -618,6 +735,8 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
                     id="output"
                     class="output"
                 >${text}</textarea>
+
+                ${recommendationsHtml}
             `;
         }
 
