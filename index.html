@@ -1,16 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <title>
-        Cruzamento de Figurinhas
-    </title>
+    <title>Cruzamento de Figurinhas</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -22,526 +17,291 @@
         }
 
         :root {
-
             --bg: #020617;
             --card: #0f172a;
             --text: #e2e8f0;
             --muted: #94a3b8;
             --primary: #2563eb;
+            --whatsapp: #25d366;
             --border: rgba(255, 255, 255, .06);
-
         }
 
         body {
-
-            font-family:
-                'Inter',
-                sans-serif;
+            font-family: 'Inter', sans-serif;
 
             background:
+                radial-gradient(circle at top left, #1e3a8a 0%, transparent 35%),
+                linear-gradient(135deg, #020617, #0f172a, #111827);
 
-                radial-gradient(circle at top left,
-                    #1e3a8a 0%,
-                    transparent 35%),
-
-                linear-gradient(135deg,
-                    #020617,
-                    #0f172a,
-                    #111827);
-
-            color:
-                var(--text);
-
-            padding:
-                20px;
-
-            min-height:
-                100vh;
-
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
         }
 
         .container {
-
-            max-width:
-                1400px;
-
+            max-width: 1400px;
             margin: auto;
-
         }
 
         .header {
-
             text-align: center;
-
-            margin-bottom:
-                28px;
-
+            margin-bottom: 28px;
         }
 
         .author {
-
-            font-size:
-                .72rem;
-
-            letter-spacing:
-                2px;
-
-            color:
-                #64748b;
-
-            margin-bottom:
-                12px;
-
+            font-size: .72rem;
+            letter-spacing: 2px;
+            color: #64748b;
+            margin-bottom: 12px;
         }
 
         .author span {
-
             display: block;
-
-            margin-top:
-                6px;
-
-            font-size:
-                .95rem;
-
-            font-weight:
-                700;
-
-            color:
-                #cbd5e1;
-
+            margin-top: 6px;
+            font-size: .95rem;
+            font-weight: 700;
+            color: #cbd5e1;
         }
 
         .header h1 {
-
-            font-size:
-
-                clamp(2rem,
-                    5vw,
-                    3rem);
-
-            font-weight:
-                800;
-
-            margin-bottom:
-                12px;
-
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 12px;
         }
 
         .header p {
-
-            max-width:
-                720px;
-
-            margin:
-                auto;
-
-            color:
-                var(--muted);
-
-            line-height:
-                1.7;
-
+            max-width: 720px;
+            margin: auto;
+            color: var(--muted);
+            line-height: 1.7;
         }
 
         .intro {
-
-            max-width:
-                780px;
-
-            margin:
-                20px auto;
-
-            padding:
-                16px;
-
-            background:
-                rgba(255, 255, 255, .03);
-
-            border:
-                1px solid var(--border);
-
-            border-radius:
-                18px;
-
-            color:
-                #cbd5e1;
-
-            line-height:
-                1.7;
-
+            max-width: 780px;
+            margin: 20px auto;
+            padding: 16px;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            color: #cbd5e1;
+            line-height: 1.7;
         }
 
         .stats {
-
             display: grid;
-
-            grid-template-columns:
-                repeat(3,
-                    1fr);
-
-            gap:
-                14px;
-
-            margin-bottom:
-                22px;
-
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
         }
 
         .stat {
-
-            background:
-
-                rgba(15,
-                    23,
-                    42,
-                    .82);
-
-            border:
-                1px solid var(--border);
-
-            padding:
-                18px;
-
-            border-radius:
-                22px;
-
+            background: rgba(15, 23, 42, .82);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 22px;
             text-align: center;
-
         }
 
         .stat span {
-
             display: block;
-
-            font-size:
-                2rem;
-
-            font-weight:
-                800;
-
-            color:
-                #60a5fa;
-
+            font-size: 2rem;
+            font-weight: 800;
+            color: #60a5fa;
         }
 
         .stat small {
-
-            color:
-                var(--muted);
-
+            color: var(--muted);
         }
 
         .grid {
-
             display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap:
-                20px;
-
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         .card {
-
-            background:
-                rgba(15,
-                    23,
-                    42,
-                    .84);
-
-            border:
-                1px solid var(--border);
-
-            border-radius:
-                24px;
-
-            padding:
-                22px;
-
-            position:
-                relative;
-
+            background: rgba(15, 23, 42, .84);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 22px;
+            position: relative;
         }
 
         .card h2 {
-
-            font-size:
-                1.1rem;
-
-            margin-bottom:
-                16px;
-
+            font-size: 1.1rem;
+            margin-bottom: 16px;
         }
 
         .paste {
-
-            position:
-                absolute;
-
-            right:
-                20px;
-
-            top:
-                20px;
-
-            padding:
-                10px 14px;
-
-            background:
-                var(--primary);
-
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            padding: 10px 14px;
+            background: var(--primary);
             color: white;
-
             border: none;
-
-            border-radius:
-                14px;
-
+            border-radius: 14px;
             cursor: pointer;
-
         }
 
         textarea {
-
-            width:
-                100%;
-
-            height:
-                420px;
-
-            background:
-                var(--bg);
-
+            width: 100%;
+            height: 420px;
+            background: var(--bg);
             border: none;
-
             outline: none;
-
-            padding:
-                18px;
-
-            border-radius:
-                18px;
-
+            padding: 18px;
+            border-radius: 18px;
             resize: none;
-
             color: white;
-
-            font-size:
-                15px;
-
-            line-height:
-                1.7;
-
+            font-size: 15px;
+            line-height: 1.7;
         }
 
         .actions {
-
             display: flex;
-
             justify-content: center;
-
-            gap:
-                14px;
-
-            margin:
-                28px 0;
-
-            flex-wrap:
-                wrap;
-
+            gap: 14px;
+            margin: 28px 0;
+            flex-wrap: wrap;
         }
 
         button {
-
-            padding:
-                16px 28px;
-
+            padding: 16px 28px;
             border: none;
-
-            border-radius:
-                18px;
-
+            border-radius: 18px;
             cursor: pointer;
-
-            font-weight:
-                700;
-
+            font-weight: 700;
         }
 
         .primary {
-
-            background:
-                var(--primary);
-
+            background: var(--primary);
             color: white;
-
         }
 
         .secondary {
-
-            background:
-                #1e293b;
-
+            background: #1e293b;
             color: white;
-
         }
 
         .result {
-
-            background:
-                var(--bg);
-
-            border:
-                1px solid var(--border);
-
-            padding:
-                20px;
-
-            border-radius:
-                24px;
-
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 24px;
         }
 
         .output {
-
-            width:
-                100%;
-
-            height:
-                320px;
-
-            background:
-                transparent;
-
+            width: 100%;
+            height: 320px;
+            background: transparent;
             border: none;
-
             outline: none;
-
             resize: none;
-
-            color:
-                #22c55e;
-
+            color: #22c55e;
         }
 
         .floating {
-
             display: none;
+        }
 
+        .whatsapp-btn {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 14px 18px;
+
+            background: var(--whatsapp);
+            color: white;
+
+            border-radius: 999px;
+
+            font-weight: 800;
+            font-size: .95rem;
+
+            text-decoration: none;
+
+            box-shadow: 0 12px 30px rgba(37, 211, 102, .35);
+
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px rgba(37, 211, 102, .45);
+        }
+
+        .whatsapp-btn span {
+            font-size: 1.2rem;
         }
 
         .footer {
-
-            margin-top:
-                60px;
-
-            padding-top:
-                30px;
-
-            border-top:
-                1px solid var(--border);
-
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
             text-align: center;
-
         }
 
         .footer-main {
-
-            font-size:
-                1rem;
-
-            font-weight:
-                700;
-
+            font-size: 1rem;
+            font-weight: 700;
         }
 
         .footer-sub {
-
-            margin-top:
-                10px;
-
-            color:
-                #64748b;
-
-            line-height:
-                1.8;
-
+            margin-top: 10px;
+            color: #64748b;
+            line-height: 1.8;
         }
 
         .footer-sub a {
-
-            color:
-                #60a5fa;
-
-            text-decoration:
-                none;
-
+            color: #60a5fa;
+            text-decoration: none;
         }
 
         @media(max-width:900px) {
-
             .grid {
-
-                grid-template-columns:
-                    1fr;
-
+                grid-template-columns: 1fr;
             }
 
             textarea {
-
-                height:
-                    260px;
-
+                height: 260px;
             }
 
             .stats {
-
-                gap:
-                    8px;
-
+                gap: 8px;
             }
 
             .stat {
-
-                padding:
-                    12px;
-
+                padding: 12px;
             }
 
             .stat span {
-
-                font-size:
-                    1.5rem;
-
+                font-size: 1.5rem;
             }
 
             .floating {
-
                 display: flex;
-
-                position:
-                    fixed;
-
-                bottom:
-                    18px;
-
-                left:
-                    50%;
-
-                transform:
-                    translateX(-50%);
-
-                z-index:
-                    999;
-
+                position: fixed;
+                bottom: 18px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 999;
             }
 
+            .whatsapp-btn {
+                right: 14px;
+                bottom: 78px;
+                padding: 13px 15px;
+                font-size: .85rem;
+            }
         }
     </style>
-
 </head>
 
 <body>
@@ -551,32 +311,19 @@
         <div class="header">
 
             <div class="author">
-
                 DESENVOLVIDO POR
-
-                <span>
-                    Frederico Braga
-                </span>
-
+                <span>Frederico Braga</span>
             </div>
 
-            <h1>
-
-                Cruzamento de Figurinhas
-
-            </h1>
+            <h1>Cruzamento de Figurinhas</h1>
 
             <p>
-
                 Compare listas de figurinhas e descubra automaticamente as possíveis trocas.
-
             </p>
 
             <div class="intro">
-
-                Cole em um lado as figurinhas repetidas e no outro as figurinhas faltantes. Clique em <b>Cruzar</b> para
-                gerar o resultado.
-
+                Cole em um lado as figurinhas repetidas e no outro as figurinhas faltantes.
+                Clique em <b>Cruzar</b> para gerar o resultado.
             </div>
 
         </div>
@@ -604,35 +351,25 @@
 
             <div class="card">
 
-                <button class="paste" onclick="pasteText('mine')">
-
+                <button type="button" class="paste" onclick="pasteText('mine')">
                     Colar
-
                 </button>
 
-                <h2>
-                    Suas repetidas
-                </h2>
+                <h2>Suas repetidas</h2>
 
-                <textarea id="mine">
-                </textarea>
+                <textarea id="mine"></textarea>
 
             </div>
 
             <div class="card">
 
-                <button class="paste" onclick="pasteText('friend')">
-
+                <button type="button" class="paste" onclick="pasteText('friend')">
                     Colar
-
                 </button>
 
-                <h2>
-                    Faltantes do amigo
-                </h2>
+                <h2>Faltantes do amigo</h2>
 
-                <textarea id="friend">
-                </textarea>
+                <textarea id="friend"></textarea>
 
             </div>
 
@@ -640,72 +377,62 @@
 
         <div class="actions">
 
-            <button class="primary" onclick="crossStickers()">
-
+            <button type="button" class="primary" onclick="crossStickers()">
                 Cruzar
-
             </button>
 
-            <button class="secondary" onclick="clearAll()">
-
+            <button type="button" class="secondary" onclick="clearAll()">
                 Limpar
-
             </button>
 
         </div>
 
         <div class="floating">
 
-            <button class="primary" onclick="crossStickers()">
-
+            <button type="button" class="primary" onclick="crossStickers()">
                 Cruzar
-
             </button>
 
         </div>
 
         <div id="result" class="result">
-
             Resultado aparecerá aqui
-
         </div>
 
         <div class="footer">
 
             <div class="footer-main">
-
                 Frederico Braga
-
             </div>
 
             <div class="footer-sub">
-
                 Ferramenta para comparação de figurinhas • Copa 2026
-
-                
             </div>
 
         </div>
 
     </div>
+
+    <a
+        href="https://wa.me/5535997236033?text=Ol%C3%A1!%20Usei%20seu%20sistema%20de%20troca%20de%20figurinhas%20e%20tenho%20interesse%20em%20comprar%20pacotes!"
+        class="whatsapp-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Comprar pacotes pelo WhatsApp"
+    >
+        <span>💬</span>
+        Comprar pacotes
+    </a>
+
     <script>
-        function normalizeSticker(
-            prefix,
-            number
-        ) {
-
+        function normalizeSticker(prefix, number) {
             return `${prefix.toUpperCase()} ${parseInt(number)}`;
-
         }
 
-        function extractStickers(
-            text
-        ) {
-
+        function extractStickers(text) {
             const result = [];
 
             const ignored = [
-
                 "pg.",
                 "história",
                 "coleção",
@@ -713,385 +440,152 @@
                 "extra stickers",
                 "repetidas",
                 "faltantes"
-
             ];
 
-            const lines =
-                text.split("\n");
+            const lines = text.split("\n");
 
             for (let raw of lines) {
+                let line = raw.trim();
 
-                let line =
-                    raw.trim();
-
-                if (!line)
-                    continue;
-
-                let lower =
-                    line.toLowerCase();
-
-                if (
-                    ignored.some(
-                        t =>
-                            lower.includes(t)
-                    )
-                ) {
+                if (!line) {
                     continue;
                 }
 
-                if (
-                    line.includes(":")
-                ) {
+                let lower = line.toLowerCase();
 
-                    let [
-                        left,
-                        right
-                    ] =
-                        line.split(":");
+                if (ignored.some(t => lower.includes(t))) {
+                    continue;
+                }
 
-                    let match =
-                        left.match(
-                            /\b([A-Z]{2,6})\b/
-                        );
+                if (line.includes(":")) {
+                    let [left, right] = line.split(":");
+
+                    let match = left.match(/\b([A-Z]{2,6})\b/);
 
                     if (match) {
+                        let prefix = match[1];
 
-                        let prefix =
-                            match[1];
-
-                        let nums =
-                            right.match(
-                                /\d{1,3}/g
-                            );
+                        let nums = right.match(/\d{1,3}/g);
 
                         if (nums) {
-
-                            nums.forEach(
-                                n => {
-
-                                    result.push(
-
-                                        normalizeSticker(
-                                            prefix,
-                                            n
-                                        )
-
-                                    );
-
-                                });
-
+                            nums.forEach(n => {
+                                result.push(normalizeSticker(prefix, n));
+                            });
                         }
 
                         continue;
-
                     }
-
                 }
 
                 let compact = [
-
-                    ...
-                    line.matchAll(
-                        /\b([A-Z]{2,6})\s*(\d{1,3})\b/g
-                    )
-
+                    ...line.matchAll(/\b([A-Z]{2,6})\s*(\d{1,3})\b/g)
                 ];
 
-                compact.forEach(
-                    m => {
-
-                        result.push(
-
-                            normalizeSticker(
-                                m[1],
-                                m[2]
-                            )
-
-                        );
-
-                    });
-
+                compact.forEach(m => {
+                    result.push(normalizeSticker(m[1], m[2]));
+                });
             }
 
-            return [
-
-                ...new Set(
-                    result
-                )
-
-            ];
-
+            return [...new Set(result)];
         }
 
-        function groupResults(
-            list
-        ) {
-
+        function groupResults(list) {
             const groups = {};
 
-            list.forEach(
-                item => {
+            list.forEach(item => {
+                const [prefix, number] = item.split(" ");
 
-                    const [
-                        prefix,
-                        number
-                    ] =
-                        item.split(
-                            " "
-                        );
+                if (!groups[prefix]) {
+                    groups[prefix] = [];
+                }
 
-                    if (
-                        !groups[
-                        prefix
-                        ]
-                    ) {
-
-                        groups[
-                            prefix
-                        ] = [];
-
-                    }
-
-                    groups[
-                        prefix
-                    ]
-                        .push(
-                            parseInt(
-                                number
-                            )
-                        );
-
-                });
+                groups[prefix].push(parseInt(number));
+            });
 
             return groups;
-
         }
 
         function updateCounters() {
+            const mine = extractStickers(
+                document.getElementById("mine").value
+            );
 
-            const mine =
+            const friend = extractStickers(
+                document.getElementById("friend").value
+            );
 
-                extractStickers(
+            const result = mine.filter(x => friend.includes(x));
 
-                    document
-                        .getElementById(
-                            "mine"
-                        )
-                        .value
-
-                );
-
-            const friend =
-
-                extractStickers(
-
-                    document
-                        .getElementById(
-                            "friend"
-                        )
-                        .value
-
-                );
-
-            const result =
-
-                mine.filter(
-
-                    x =>
-                        friend.includes(
-                            x
-                        )
-
-                );
-
-            document
-                .getElementById(
-                    "countMine"
-                )
-                .innerText =
-                mine.length;
-
-            document
-                .getElementById(
-                    "countFriend"
-                )
-                .innerText =
-                friend.length;
-
-            document
-                .getElementById(
-                    "countResult"
-                )
-                .innerText =
-                result.length;
-
+            document.getElementById("countMine").innerText = mine.length;
+            document.getElementById("countFriend").innerText = friend.length;
+            document.getElementById("countResult").innerText = result.length;
         }
 
         function crossStickers() {
-
-            const mine =
-
-                extractStickers(
-
-                    document
-                        .getElementById(
-                            "mine"
-                        )
-                        .value
-
-                );
-
-            const friend =
-
-                extractStickers(
-
-                    document
-                        .getElementById(
-                            "friend"
-                        )
-                        .value
-
-                );
-
-            if (
-                mine.length === 0
-            ) {
-
-                alert(
-                    "Insira suas repetidas"
-                );
-
-                return;
-
-            }
-
-            if (
-                friend.length === 0
-            ) {
-
-                alert(
-                    "Insira as faltantes"
-                );
-
-                return;
-
-            }
-
-            const result =
-
-                mine.filter(
-                    x =>
-                        friend.includes(
-                            x
-                        )
-                );
-
-            renderResult(
-                result
+            const mine = extractStickers(
+                document.getElementById("mine").value
             );
+
+            const friend = extractStickers(
+                document.getElementById("friend").value
+            );
+
+            if (mine.length === 0) {
+                alert("Insira suas repetidas");
+                return;
+            }
+
+            if (friend.length === 0) {
+                alert("Insira as faltantes");
+                return;
+            }
+
+            const result = mine.filter(x => friend.includes(x));
+
+            renderResult(result);
 
             updateCounters();
 
             setTimeout(() => {
-
-                document
-                    .getElementById(
-                        "result"
-                    )
-
-                    .scrollIntoView({
-
-                        behavior:
-                            "smooth",
-
-                        block:
-                            "start"
-
-                    });
-
+                document.getElementById("result").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             }, 150);
-
         }
 
-        function renderResult(
-            result
-        ) {
+        function renderResult(result) {
+            const box = document.getElementById("result");
 
-            const box =
-
-                document
-                    .getElementById(
-                        "result"
-                    );
-
-            if (
-                result.length === 0
-            ) {
-
+            if (result.length === 0) {
                 box.innerHTML = `
-
-<div
-style="
-text-align:center;
-color:#94a3b8;
-padding:40px;
-"
->
-
-Nenhuma figurinha encontrada
-
-</div>
-
-`;
+                    <div style="
+                        text-align:center;
+                        color:#94a3b8;
+                        padding:40px;
+                    ">
+                        Nenhuma figurinha encontrada
+                    </div>
+                `;
 
                 return;
-
             }
 
-            const grouped =
-                groupResults(
-                    result
-                );
+            const grouped = groupResults(result);
 
             let text = "";
-
             let total = 0;
 
             Object
-                .keys(
-                    grouped
-                )
-
+                .keys(grouped)
                 .sort()
+                .forEach(country => {
+                    grouped[country].sort((a, b) => a - b);
 
-                .forEach(
-                    country => {
+                    text += `${country} ${grouped[country].join(", ")}\n`;
 
-                        grouped[
-                            country
-                        ]
-
-                            .sort(
-                                (a, b) =>
-                                    a - b
-                            );
-
-                        // UMA LINHA POR PAÍS
-
-                        text +=
-
-                            `${country} ${grouped[country].join(", ")}\n`;
-
-                        total +=
-
-                            grouped[
-                                country
-                            ]
-                                .length;
-
-                    }
-
-                );
+                    total += grouped[country].length;
+                });
 
             text += `
 
@@ -1105,158 +599,79 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
 `;
 
             box.innerHTML = `
+                <div style="
+                    display:flex;
+                    justify-content:flex-end;
+                    margin-bottom:14px;
+                ">
+                    <button
+                        type="button"
+                        onclick="copyResult(this)"
+                        class="primary"
+                    >
+                        Copiar Resultado
+                    </button>
+                </div>
 
-<div
-style="
-display:flex;
-justify-content:flex-end;
-margin-bottom:14px;
-"
->
-
-<button
-
-onclick="copyResult()"
-
-class="primary"
-
->
-
-Copiar Resultado
-
-</button>
-
-</div>
-
-<textarea
-
-readonly
-
-id="output"
-
-class="output"
-
->${text}</textarea>
-
-`;
-
+                <textarea
+                    readonly
+                    id="output"
+                    class="output"
+                >${text}</textarea>
+            `;
         }
 
-        async function copyResult() {
-
+        async function copyResult(button) {
             try {
+                await navigator.clipboard.writeText(
+                    document.getElementById("output").value
+                );
 
-                await navigator
-                    .clipboard
-                    .writeText(
-
-                        document
-                            .getElementById(
-                                "output"
-                            )
-                            .value
-
-                    );
-
-                event.target.innerText =
-                    "Copiado";
+                button.innerText = "Copiado";
 
                 setTimeout(() => {
-
-                    event.target.innerText =
-                        "Copiar Resultado";
-
+                    button.innerText = "Copiar Resultado";
                 }, 1200);
 
-            } catch { }
-
+            } catch {
+                alert("Não foi possível copiar o resultado.");
+            }
         }
 
-        async function pasteText(
-            target
-        ) {
-
+        async function pasteText(target) {
             try {
+                const text = await navigator.clipboard.readText();
 
-                const text =
+                const field = document.getElementById(target);
 
-                    await navigator
-                        .clipboard
-                        .readText();
-
-                const field =
-
-                    document
-                        .getElementById(
-                            target
-                        );
-
-                field.value =
-
-                    field.value
-                        ?
-                        field.value
-                        +
-                        "\n"
-                        +
-                        text
-                        :
-                        text;
+                field.value = field.value
+                    ? field.value + "\n" + text
+                    : text;
 
                 updateCounters();
 
             } catch {
-
-                alert(
-                    "Permita acesso à área de transferência"
-                );
-
+                alert("Permita acesso à área de transferência");
             }
-
         }
 
         function clearAll() {
+            document.getElementById("mine").value = "";
+            document.getElementById("friend").value = "";
 
-            document
-                .getElementById(
-                    "mine"
-                )
-                .value = "";
-
-            document
-                .getElementById(
-                    "friend"
-                )
-                .value = "";
-
-            document
-                .getElementById(
-                    "result"
-                )
-                .innerHTML =
+            document.getElementById("result").innerHTML =
                 "Resultado aparecerá aqui";
 
             updateCounters();
-
         }
 
         document
-            .getElementById(
-                "mine"
-            )
-            .addEventListener(
-                "input",
-                updateCounters
-            );
+            .getElementById("mine")
+            .addEventListener("input", updateCounters);
 
         document
-            .getElementById(
-                "friend"
-            )
-            .addEventListener(
-                "input",
-                updateCounters
-            );
+            .getElementById("friend")
+            .addEventListener("input", updateCounters);
 
         updateCounters();
     </script>
