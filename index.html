@@ -189,10 +189,30 @@
         }
 
         .result {
+            background: transparent;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .result-box {
             background: var(--bg);
             border: 1px solid var(--border);
             padding: 20px;
             border-radius: 24px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .result-header h3 {
+            color: #60a5fa;
+            font-size: 1rem;
         }
 
         .output {
@@ -206,7 +226,7 @@
         }
 
         .recommendations {
-            margin-top: 34px;
+            margin-top: 28px;
             padding: 22px;
             border-radius: 22px;
             background:
@@ -257,20 +277,16 @@
             right: 22px;
             bottom: 22px;
             z-index: 1000;
-
             display: flex;
             align-items: center;
             gap: 10px;
-
             padding: 14px 18px;
             background: var(--whatsapp);
             color: white;
             border-radius: 999px;
-
             font-weight: 800;
             font-size: .95rem;
             text-decoration: none;
-
             box-shadow: 0 12px 30px rgba(37, 211, 102, .35);
             transition: transform .2s ease, box-shadow .2s ease;
         }
@@ -335,6 +351,15 @@
                 font-size: 1.5rem;
             }
 
+            .result-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .result-header button {
+                width: 100%;
+            }
+
             .floating {
                 display: flex;
                 position: fixed;
@@ -356,7 +381,6 @@
                 right: 14px;
                 bottom: 14px;
                 z-index: 1000;
-
                 justify-content: center;
                 padding: 14px 12px;
                 font-size: .85rem;
@@ -462,7 +486,9 @@
         </div>
 
         <div id="result" class="result">
-            Resultado aparecerá aqui
+            <div class="result-box">
+                Resultado aparecerá aqui
+            </div>
         </div>
 
         <div class="footer">
@@ -606,7 +632,7 @@
 
             let html = `
                 <div class="recommendations">
-                    <h3>Melhores escolhas para fechar grupos</h3>
+                    <h3>Prioridades de troca</h3>
 
                     <div class="recommendations-list">
             `;
@@ -693,12 +719,18 @@
 
             if (result.length === 0) {
                 box.innerHTML = `
-                    <div style="
-                        text-align:center;
-                        color:#94a3b8;
-                        padding:40px;
-                    ">
-                        Nenhuma figurinha encontrada
+                    <div class="result-box">
+                        <div class="result-header">
+                            <h3>Trocas possíveis</h3>
+                        </div>
+
+                        <div style="
+                            text-align:center;
+                            color:#94a3b8;
+                            padding:40px;
+                        ">
+                            Nenhuma figurinha encontrada
+                        </div>
                     </div>
                 `;
 
@@ -735,25 +767,25 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
             const recommendationsHtml = buildTradeRecommendations(result, faltantes);
 
             box.innerHTML = `
-                <div style="
-                    display:flex;
-                    justify-content:flex-end;
-                    margin-bottom:14px;
-                ">
-                    <button
-                        type="button"
-                        onclick="copyResult(this)"
-                        class="primary"
-                    >
-                        Copiar Resultado
-                    </button>
-                </div>
+                <div class="result-box">
+                    <div class="result-header">
+                        <h3>Trocas possíveis</h3>
 
-                <textarea
-                    readonly
-                    id="output"
-                    class="output"
-                >${text}</textarea>
+                        <button
+                            type="button"
+                            onclick="copyResult(this)"
+                            class="primary"
+                        >
+                            Copiar Resultado
+                        </button>
+                    </div>
+
+                    <textarea
+                        readonly
+                        id="output"
+                        class="output"
+                    >${text}</textarea>
+                </div>
 
                 ${recommendationsHtml}
             `;
@@ -797,8 +829,11 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
             document.getElementById("mine").value = "";
             document.getElementById("friend").value = "";
 
-            document.getElementById("result").innerHTML =
-                "Resultado aparecerá aqui";
+            document.getElementById("result").innerHTML = `
+                <div class="result-box">
+                    Resultado aparecerá aqui
+                </div>
+            `;
 
             updateCounters();
         }
