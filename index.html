@@ -495,11 +495,14 @@
     const db = firebase.database();
 
     const VALID_PREFIXES = new Set([
-        "ARG", "AUS", "BEL", "BIH", "BRA", "CAN", "CIV", "COD", "CPV",
-        "CRO", "CUW", "ECU", "EGY", "ESP", "FRA", "FWC", "GER", "HAI",
-        "IRN", "IRQ", "JOR", "JPN", "KOR", "KSA", "MAR", "MEX", "NED",
-        "NZL", "PAN", "POR", "QAT", "RSA", "SCO", "SEN", "SWE", "TUR",
-        "URU", "USA", "UZB", "ALG"
+        "ALG", "ARG", "AUS", "AUT", "BEL", "BIH", "BRA", "CAN",
+        "CIV", "COD", "COL", "CPV", "CRO", "CUW", "CZE", "ECU",
+        "EGY", "ENG", "ESP", "FRA", "GER", "GHA", "HAI", "IRN",
+        "IRQ", "JOR", "JPN", "KOR", "KSA", "MAR", "MEX", "NED",
+        "NOR", "NZL", "PAN", "PAR", "POR", "QAT", "RSA", "SCO",
+        "SEN", "SUI", "SWE", "TUN", "TUR", "URU", "USA", "UZB",
+    
+        "FWC", "CC"
     ]);
 
     function initializeFirebaseCounters() {
