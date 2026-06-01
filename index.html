@@ -445,7 +445,7 @@
                 </h2>
 
                 <textarea id="mine">
-                </textarea>
+</textarea>
 
             </div>
 
@@ -462,7 +462,7 @@
                 </h2>
 
                 <textarea id="friend">
-                </textarea>
+</textarea>
 
             </div>
 
@@ -508,6 +508,7 @@
 
     </div>
     <script>
+
         function normalizeSticker(
             prefix,
             number
@@ -863,8 +864,28 @@
 
             updateCounters();
 
-        }
 
+            // NOVO → desce suavemente até o resultado
+
+            setTimeout(() => {
+
+                document
+                    .getElementById(
+                        "result"
+                    )
+                    .scrollIntoView({
+
+                        behavior:
+                            "smooth",
+
+                        block:
+                            "start"
+
+                    });
+
+            }, 150);
+
+        }
         function renderResult(
             result
         ) {
@@ -1146,6 +1167,7 @@ Resultado aparecerá aqui
             }
 
         }
+
     </script>
 
 </body>
