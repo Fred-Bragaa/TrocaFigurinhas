@@ -480,256 +480,267 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjkrUkR6LTXChF51ud0XmSbXyYzPBPw1Q",
-            authDomain: "figurimatch.firebaseapp.com",
-            databaseURL: "https://figurimatch-default-rtdb.firebaseio.com",
-            projectId: "figurimatch",
-            storageBucket: "figurimatch.firebasestorage.app",
-            messagingSenderId: "467634553838",
-            appId: "1:467634553838:web:c63d16fe4d0cf5cde704ff"
-        };
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjkrUkR6LTXChF51ud0XmSbXyYzPBPw1Q",
+        authDomain: "figurimatch.firebaseapp.com",
+        databaseURL: "https://figurimatch-default-rtdb.firebaseio.com",
+        projectId: "figurimatch",
+        storageBucket: "figurimatch.firebasestorage.app",
+        messagingSenderId: "467634553838",
+        appId: "1:467634553838:web:c63d16fe4d0cf5cde704ff"
+    };
 
-        firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        const db = firebase.database();
+    const VALID_PREFIXES = new Set([
+        "ARG", "AUS", "BEL", "BIH", "BRA", "CAN", "CIV", "COD", "CPV",
+        "CRO", "CUW", "ECU", "EGY", "ESP", "FRA", "FWC", "GER", "HAI",
+        "IRN", "IRQ", "JOR", "JPN", "KOR", "KSA", "MAR", "MEX", "NED",
+        "NZL", "PAN", "POR", "QAT", "RSA", "SCO", "SEN", "SWE", "TUR",
+        "URU", "USA", "UZB", "ALG"
+    ]);
 
-        function initializeFirebaseCounters() {
-            const accessRef = db.ref("likes");
+    function initializeFirebaseCounters() {
+        const accessRef = db.ref("likes");
 
-            accessRef.on("value", snapshot => {
-                document.getElementById("likeCount").innerText =
-                    snapshot.val() || 0;
-            });
+        accessRef.on("value", snapshot => {
+            const likeElement = document.getElementById("likeCount");
 
-            accessRef.transaction(current => {
-                return (current || 0) + 1;
-            });
-        }
+            if (likeElement) {
+                likeElement.innerText = snapshot.val() || 0;
+            }
+        });
 
-        function normalizeSticker(prefix, number) {
-            return `${prefix.toUpperCase()} ${parseInt(number, 10)}`;
-        }
+        accessRef.transaction(current => {
+            return (current || 0) + 1;
+        });
+    }
 
-        function extractStickers(text) {
-            const result = [];
+    function normalizeSticker(prefix, number) {
+        return `${prefix.toUpperCase()} ${parseInt(number, 10)}`;
+    }
 
-            const ignored = [
-                "pg.",
-                "história",
-                "coleção",
-                "bola e países",
-                "extra stickers",
-                "repetidas",
-                "faltantes"
-            ];
+    function cleanLine(line) {
+        return line
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[🇦-🇿]/gu, "")
+            .replace(/[🏴📜]/gu, "")
+            .replace(/\./g, " ")
+            .replace(/[;|]/g, ",")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
 
-            const lines = text.split(/\r?\n/);
+    function shouldIgnoreLine(line) {
+        const lower = line.toLowerCase();
 
-            for (let raw of lines) {
-                let line = raw.trim();
+        const ignoredTerms = [
+            "album copa",
+            "repetidas para troca",
+            "feito com",
+            "play.google.com",
+            "https://",
+            "http://",
+            "no total",
+            "se alguem tiver",
+            "chama no privado",
+            "---"
+        ];
 
-                if (!line) continue;
+        return ignoredTerms.some(term => lower.includes(term));
+    }
 
-                const lower = line.toLowerCase();
+    function expandRepeatedNumbers(text) {
+        return text.replace(/(\d{1,3})\s*\(\s*x\s*(\d+)\s*\)/gi, (_, number, qty) => {
+            return Array(Number(qty)).fill(number).join(" ");
+        });
+    }
 
-                if (ignored.some(t => lower.includes(t))) continue;
+    function extractStickers(text) {
+        const result = [];
+        const lines = text.split(/\r?\n/);
 
-                const dashed = line.match(/^([A-Z]{2,6})\b.*?(?:[:—–-])\s*(.+)$/u);
+        lines.forEach(rawLine => {
+            let line = cleanLine(rawLine);
 
-                if (dashed) {
-                    const prefix = dashed[1];
-                    const nums = dashed[2].match(/\d{1,3}/g);
-
-                    if (nums) {
-                        nums.forEach(n => {
-                            result.push(normalizeSticker(prefix, n));
-                        });
-                    }
-
-                    continue;
-                }
-
-                const compact = [...line.matchAll(/\b([A-Z]{2,6})\b[^\dA-Z]{0,20}(\d{1,3})\b/g)];
-
-                compact.forEach(m => {
-                    result.push(normalizeSticker(m[1], m[2]));
-                });
+            if (!line || shouldIgnoreLine(line)) {
+                return;
             }
 
-            return [...new Set(result)];
-        }
+            line = expandRepeatedNumbers(line);
 
-        function groupResults(list) {
-            const groups = {};
+            const prefixMatch = line.match(/\b([A-Z]{2,6})\b/i);
 
-            list.forEach(item => {
-                const [prefix, number] = item.split(" ");
-
-                if (!groups[prefix]) {
-                    groups[prefix] = [];
-                }
-
-                groups[prefix].push(parseInt(number, 10));
-            });
-
-            return groups;
-        }
-
-        function buildTradeRecommendations(result, faltantes) {
-            const faltantesGrouped = groupResults(faltantes);
-
-            const recommendations = result.map(item => {
-                const [prefix] = item.split(" ");
-
-                const missingCount = faltantesGrouped[prefix]
-                    ? faltantesGrouped[prefix].length
-                    : 999;
-
-                return {
-                    sticker: item,
-                    prefix: prefix,
-                    missingCount: missingCount
-                };
-            });
-
-            recommendations.sort((a, b) => {
-                if (a.missingCount !== b.missingCount) {
-                    return a.missingCount - b.missingCount;
-                }
-
-                return a.sticker.localeCompare(b.sticker);
-            });
-
-            if (recommendations.length === 0) {
-                return "";
+            if (!prefixMatch) {
+                return;
             }
 
-            let html = `
-                <div class="recommendations">
-                    <h3>Prioridades de troca</h3>
+            const prefix = prefixMatch[1].toUpperCase();
 
-                    <div class="recommendations-list">
-            `;
+            if (!VALID_PREFIXES.has(prefix)) {
+                return;
+            }
 
-            recommendations.forEach((item, index) => {
-                let reason = "";
+            const startIndex = prefixMatch.index + prefixMatch[0].length;
+            const afterPrefix = line.slice(startIndex);
 
-                if (item.missingCount === 1) {
-                    reason = `fecha <b>${item.prefix}</b>`;
-                } else {
-                    reason = `ajuda em <b>${item.prefix}</b>, onde ainda faltam ${item.missingCount} figurinhas`;
-                }
+            const nums = afterPrefix.match(/\d{1,3}/g);
 
-                html += `
-                    <div class="recommendation-item">
-                        <b>${index + 1}. Pegue ${item.sticker}</b> — ${reason}.
-                    </div>
-                `;
+            if (!nums) {
+                return;
+            }
+
+            nums.forEach(number => {
+                result.push(normalizeSticker(prefix, number));
             });
+        });
+
+        return [...new Set(result)];
+    }
+
+    function groupResults(list) {
+        const groups = {};
+
+        list.forEach(item => {
+            const [prefix, number] = item.split(" ");
+
+            if (!groups[prefix]) {
+                groups[prefix] = [];
+            }
+
+            groups[prefix].push(parseInt(number, 10));
+        });
+
+        return groups;
+    }
+
+    function buildTradeRecommendations(result, faltantes) {
+        const faltantesGrouped = groupResults(faltantes);
+
+        const recommendations = result.map(item => {
+            const [prefix] = item.split(" ");
+
+            const missingCount = faltantesGrouped[prefix]
+                ? faltantesGrouped[prefix].length
+                : 999;
+
+            return {
+                sticker: item,
+                prefix: prefix,
+                missingCount: missingCount
+            };
+        });
+
+        recommendations.sort((a, b) => {
+            if (a.missingCount !== b.missingCount) {
+                return a.missingCount - b.missingCount;
+            }
+
+            return a.sticker.localeCompare(b.sticker);
+        });
+
+        if (recommendations.length === 0) {
+            return "";
+        }
+
+        let html = `
+            <div class="recommendations">
+                <h3>Prioridades de troca</h3>
+                <div class="recommendations-list">
+        `;
+
+        recommendations.forEach((item, index) => {
+            const reason = item.missingCount === 1
+                ? `fecha <b>${item.prefix}</b>`
+                : `ajuda em <b>${item.prefix}</b>, onde ainda faltam ${item.missingCount} figurinhas`;
 
             html += `
+                <div class="recommendation-item">
+                    <b>${index + 1}. Pegue ${item.sticker}</b> — ${reason}.
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    function updateCounters() {
+        const mine = extractStickers(document.getElementById("mine").value);
+        const friend = extractStickers(document.getElementById("friend").value);
+        const result = mine.filter(x => friend.includes(x));
+
+        document.getElementById("countMine").innerText = mine.length;
+        document.getElementById("countFriend").innerText = friend.length;
+        document.getElementById("countResult").innerText = result.length;
+    }
+
+    function crossStickers() {
+        const mine = extractStickers(document.getElementById("mine").value);
+        const friend = extractStickers(document.getElementById("friend").value);
+
+        if (mine.length === 0) {
+            alert("Insira as repetidas");
+            return;
+        }
+
+        if (friend.length === 0) {
+            alert("Insira as faltantes");
+            return;
+        }
+
+        const result = mine.filter(x => friend.includes(x));
+
+        renderResult(result);
+        updateCounters();
+
+        setTimeout(() => {
+            document.getElementById("result").scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }, 150);
+    }
+
+    function renderResult(result) {
+        const box = document.getElementById("result");
+        const faltantes = extractStickers(document.getElementById("friend").value);
+
+        if (result.length === 0) {
+            box.innerHTML = `
+                <div class="result-box">
+                    <div class="result-header">
+                        <h3>Trocas possíveis</h3>
+                    </div>
+
+                    <div style="text-align:center;color:#94a3b8;padding:40px;">
+                        Nenhuma figurinha encontrada
                     </div>
                 </div>
             `;
 
-            return html;
+            return;
         }
 
-        function updateCounters() {
-            const mine = extractStickers(
-                document.getElementById("mine").value
-            );
+        const grouped = groupResults(result);
 
-            const friend = extractStickers(
-                document.getElementById("friend").value
-            );
+        let text = "";
+        let total = 0;
 
-            const result = mine.filter(x => friend.includes(x));
+        Object.keys(grouped).sort().forEach(country => {
+            grouped[country].sort((a, b) => a - b);
+            text += `${country} ${grouped[country].join(", ")}\n`;
+            total += grouped[country].length;
+        });
 
-            document.getElementById("countMine").innerText = mine.length;
-            document.getElementById("countFriend").innerText = friend.length;
-            document.getElementById("countResult").innerText = result.length;
-        }
-
-        function crossStickers() {
-            const mine = extractStickers(
-                document.getElementById("mine").value
-            );
-
-            const friend = extractStickers(
-                document.getElementById("friend").value
-            );
-
-            if (mine.length === 0) {
-                alert("Insira as repetidas");
-                return;
-            }
-
-            if (friend.length === 0) {
-                alert("Insira as faltantes");
-                return;
-            }
-
-            const result = mine.filter(x => friend.includes(x));
-
-            renderResult(result);
-
-            updateCounters();
-
-            setTimeout(() => {
-                document.getElementById("result").scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }, 150);
-        }
-
-        function renderResult(result) {
-            const box = document.getElementById("result");
-
-            const faltantes = extractStickers(
-                document.getElementById("friend").value
-            );
-
-            if (result.length === 0) {
-                box.innerHTML = `
-                    <div class="result-box">
-                        <div class="result-header">
-                            <h3>Trocas possíveis</h3>
-                        </div>
-
-                        <div style="
-                            text-align:center;
-                            color:#94a3b8;
-                            padding:40px;
-                        ">
-                            Nenhuma figurinha encontrada
-                        </div>
-                    </div>
-                `;
-
-                return;
-            }
-
-            const grouped = groupResults(result);
-
-            let text = "";
-            let total = 0;
-
-            Object
-                .keys(grouped)
-                .sort()
-                .forEach(country => {
-                    grouped[country].sort((a, b) => a - b);
-
-                    text += `${country} ${grouped[country].join(", ")}\n`;
-
-                    total += grouped[country].length;
-                });
-
-            text += `
+        text += `
 
 TOTAL: ${total} figurinha(s)
 
@@ -740,92 +751,75 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
 
 `;
 
-            const recommendationsHtml = buildTradeRecommendations(result, faltantes);
+        const recommendationsHtml = buildTradeRecommendations(result, faltantes);
 
-            box.innerHTML = `
-                <div class="result-box">
-                    <div class="result-header">
-                        <h3>Trocas possíveis</h3>
+        box.innerHTML = `
+            <div class="result-box">
+                <div class="result-header">
+                    <h3>Trocas possíveis</h3>
 
-                        <button
-                            type="button"
-                            onclick="copyResult(this)"
-                            class="primary"
-                        >
-                            Copiar Resultado
-                        </button>
-                    </div>
-
-                    <textarea
-                        readonly
-                        id="output"
-                        class="output"
-                    >${text}</textarea>
+                    <button type="button" onclick="copyResult(this)" class="primary">
+                        Copiar Resultado
+                    </button>
                 </div>
 
-                ${recommendationsHtml}
-            `;
+                <textarea readonly id="output" class="output">${text}</textarea>
+            </div>
+
+            ${recommendationsHtml}
+        `;
+    }
+
+    async function copyResult(button) {
+        try {
+            await navigator.clipboard.writeText(
+                document.getElementById("output").value
+            );
+
+            button.innerText = "Copiado";
+
+            setTimeout(() => {
+                button.innerText = "Copiar Resultado";
+            }, 1200);
+        } catch {
+            alert("Não foi possível copiar o resultado.");
         }
+    }
 
-        async function copyResult(button) {
-            try {
-                await navigator.clipboard.writeText(
-                    document.getElementById("output").value
-                );
+    async function pasteText(target) {
+        try {
+            const text = await navigator.clipboard.readText();
+            const field = document.getElementById(target);
 
-                button.innerText = "Copiado";
-
-                setTimeout(() => {
-                    button.innerText = "Copiar Resultado";
-                }, 1200);
-
-            } catch {
-                alert("Não foi possível copiar o resultado.");
-            }
-        }
-
-        async function pasteText(target) {
-            try {
-                const text = await navigator.clipboard.readText();
-
-                const field = document.getElementById(target);
-
-                field.value = field.value
-                    ? field.value + "\n" + text
-                    : text;
-
-                updateCounters();
-
-            } catch {
-                alert("Permita acesso à área de transferência");
-            }
-        }
-
-        function clearAll() {
-            document.getElementById("mine").value = "";
-            document.getElementById("friend").value = "";
-
-            document.getElementById("result").innerHTML = `
-                <div class="result-box">
-                    Resultado aparecerá aqui
-                </div>
-            `;
+            field.value = field.value
+                ? field.value + "\n" + text
+                : text;
 
             updateCounters();
+        } catch {
+            alert("Permita acesso à área de transferência");
         }
+    }
 
-        document
-            .getElementById("mine")
-            .addEventListener("input", updateCounters);
+    function clearAll() {
+        document.getElementById("mine").value = "";
+        document.getElementById("friend").value = "";
 
-        document
-            .getElementById("friend")
-            .addEventListener("input", updateCounters);
+        document.getElementById("result").innerHTML = `
+            <div class="result-box">
+                Resultado aparecerá aqui
+            </div>
+        `;
 
-        initializeFirebaseCounters();
         updateCounters();
-    </script>
+    }
 
+    document.getElementById("mine").addEventListener("input", updateCounters);
+    document.getElementById("friend").addEventListener("input", updateCounters);
+
+    initializeFirebaseCounters();
+    updateCounters();
+</script>
 </body>
 
 </html>
