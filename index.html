@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0f172a" />
+<title>Cruzamento de Figurinhas - Copa 2026</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+    :root{
+        --bg-1:#020617;
+        --bg-2:#0f172a;
+        --bg-3:#111827;
+        --card:rgba(15,23,42,.72);
+        --card-strong:rgba(2,6,23,.88);
+        --stroke:rgba(255,255,255,.08);
+        --stroke-strong:rgba(255,255,255,.12);
+        --text:#f8fafc;
+        --muted:#94a3b8;
+        --accent:#38bdf8;
+        --accent-2:#2563eb;
+        --good:#22c55e;
+        --warn:#f59e0b;
+        --radius:28px;
+        --shadow:0 18px 50px rgba(0,0,0,.35);
+    }
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    html{
+        scroll-behavior:smooth;
+    }
+
+    body{
+        font-family:'Inter',sans-serif;
+        min-height:100vh;
+        color:var(--text);
+        background:
+            radial-gradient(circle at 10% 10%, rgba(56,189,248,.18) 0, transparent 28%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.22) 0, transparent 30%),
+            radial-gradient(circle at 50% 0%, rgba(14,165,233,.10) 0, transparent 26%),
+            linear-gradient(135deg,var(--bg-1),var(--bg-2) 55%,var(--bg-3));
+        padding:clamp(16px,3vw,32px);
+        overflow-x:hidden;
+    }
+
+    .app{
+        max-width:1400px;
+        margin:0 auto;
+    }
+
+    .hero{
+        position:relative;
+        overflow:hidden;
+        border:1px solid rgba(255,255,255,.08);
+        background:linear-gradient(180deg, rgba(15,23,42,.82), rgba(2,6,23,.72));
+        backdrop-filter:blur(18px);
+        border-radius:calc(var(--radius) + 4px);
+        padding:clamp(20px,3vw,34px);
+        box-shadow:var(--shadow);
+        margin-bottom:22px;
+    }
+
+    .hero::before{
+        content:"";
+        position:absolute;
+        inset:auto -10% -55% auto;
+        width:340px;
+        height:340px;
+        background:radial-gradient(circle, rgba(56,189,248,.28), transparent 66%);
+        pointer-events:none;
+        filter:blur(2px);
+    }
+
+    .hero-top{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:18px;
+        flex-wrap:wrap;
+        position:relative;
+        z-index:1;
+    }
+
+    .brand{
+        display:flex;
+        gap:16px;
+        align-items:flex-start;
+    }
+
+    .logo{
+        width:58px;
+        height:58px;
+        border-radius:18px;
+        background:
+            linear-gradient(135deg, rgba(56,189,248,.22), rgba(37,99,235,.42)),
+            rgba(255,255,255,.06);
+        border:1px solid rgba(255,255,255,.10);
+        display:grid;
+        place-items:center;
+        font-size:1.6rem;
+        box-shadow:0 16px 30px rgba(37,99,235,.18);
+        flex:0 0 auto;
+    }
+
+    .title-wrap h1{
+        font-size:clamp(1.7rem,4vw,3.15rem);
+        line-height:1.04;
+        font-weight:900;
+        letter-spacing:-0.04em;
+        margin-bottom:8px;
+    }
+
+    .title-wrap p{
+        color:var(--muted);
+        font-size:clamp(.96rem,1.2vw,1.05rem);
+        line-height:1.6;
+        max-width:68ch;
+    }
+
+    .pill-row{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-top:18px;
+    }
+
+    .pill{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding:10px 14px;
+        border-radius:999px;
+        background:rgba(255,255,255,.06);
+        border:1px solid rgba(255,255,255,.08);
+        color:#dbeafe;
+        font-size:.92rem;
+        font-weight:600;
+        backdrop-filter:blur(8px);
+    }
+
+    .stats{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(120px,1fr));
+        gap:12px;
+        min-width:min(100%,420px);
+        position:relative;
+        z-index:1;
+    }
+
+    .stat{
+        background:rgba(2,6,23,.5);
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:22px;
+        padding:16px 18px;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+        min-height:92px;
+    }
+
+    .stat small{
+        display:block;
+        color:var(--muted);
+        font-size:.86rem;
+        margin-bottom:10px;
+    }
+
+    .stat strong{
+        font-size:clamp(1.35rem,2.2vw,1.9rem);
+        line-height:1;
+        font-weight:900;
+        letter-spacing:-0.04em;
+    }
+
+    .stat span{
+        display:block;
+        margin-top:8px;
+        color:#cbd5e1;
+        font-size:.84rem;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+        gap:18px;
+        align-items:stretch;
+    }
+
+    .card{
+        background:var(--card);
+        border:1px solid var(--stroke);
+        border-radius:var(--radius);
+        padding:22px;
+        backdrop-filter:blur(18px);
+        box-shadow:var(--shadow);
+        min-width:0;
+    }
+
+    .card-head{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:14px;
+        margin-bottom:16px;
+    }
+
+    .card h2{
+        font-size:1.12rem;
+        font-weight:800;
+        letter-spacing:-0.03em;
+        margin-bottom:6px;
+    }
+
+    .card p{
+        color:var(--muted);
+        font-size:.92rem;
+        line-height:1.45;
+    }
+
+    .badge{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:8px 12px;
+        border-radius:999px;
+        background:rgba(56,189,248,.12);
+        border:1px solid rgba(56,189,248,.22);
+        color:#d7f3ff;
+        font-weight:700;
+        font-size:.82rem;
+        white-space:nowrap;
+    }
+
+    textarea{
+        width:100%;
+        border:none;
+        outline:none;
+        resize:vertical;
+        min-height:300px;
+        max-height:72vh;
+        border-radius:22px;
+        padding:18px 18px 20px;
+        background:var(--card-strong);
+        color:var(--text);
+        font-size:15px;
+        line-height:1.65;
+        font-family:ui-monospace,SFMono-Regular,SF Mono,Consolas,Monaco,monospace;
+        border:1px solid rgba(255,255,255,.06);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    textarea::placeholder{
+        color:#64748b;
+    }
+
+    textarea:focus{
+        border-color:rgba(56,189,248,.45);
+        box-shadow:0 0 0 4px rgba(56,189,248,.10), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    .actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+        justify-content:center;
+        margin:18px 0 18px;
+    }
+
+    button{
+        border:none;
+        cursor:pointer;
+        border-radius:18px;
+        padding:15px 22px;
+        font-size:1rem;
+        font-weight:800;
+        color:var(--text);
+        transition:transform .18s ease, opacity .18s ease, background .18s ease, box-shadow .18s ease;
+        letter-spacing:-0.01em;
+    }
+
+    button:hover{
+        transform:translateY(-2px);
+    }
+
+    button:active{
+        transform:translateY(0);
+    }
+
+    .btn-primary{
+        background:linear-gradient(135deg, #38bdf8, #2563eb 55%, #1d4ed8);
+        box-shadow:0 14px 30px rgba(37,99,235,.35);
+    }
+
+    .btn-secondary{
+        background:rgba(255,255,255,.08);
+        border:1px solid rgba(255,255,255,.08);
+    }
+
+    .btn-secondary:hover{
+        background:rgba(255,255,255,.12);
+    }
+
+    .btn-ghost{
+        background:rgba(34,197,94,.12);
+        border:1px solid rgba(34,197,94,.18);
+        color:#dcfce7;
+    }
+
+    .result-card{
+        margin-top:2px;
+    }
+
+    .result-toolbar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:14px;
+    }
+
+    .result-title{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-size:1.05rem;
+        font-weight:800;
+        letter-spacing:-0.02em;
+    }
+
+    .result-title .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background:linear-gradient(135deg, #22c55e, #86efac);
+        box-shadow:0 0 0 4px rgba(34,197,94,.12);
+    }
+
+    .output-wrap{
+        background:rgba(2,6,23,.78);
+        border:1px solid rgba(255,255,255,.06);
+        border-radius:24px;
+        padding:16px;
+        min-height:240px;
+    }
+
+    .output-text{
+        width:100%;
+        min-height:210px;
+        border:none;
+        outline:none;
+        resize:vertical;
+        background:transparent;
+        color:#86efac;
+        padding:0;
+        font-size:15px;
+        line-height:1.75;
+        font-family:ui-monospace,SFMono-Regular,SF Mono,Consolas,Monaco,monospace;
+    }
+
+    .empty{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-height:210px;
+        color:var(--muted);
+        text-align:center;
+        padding:18px;
+        font-size:.98rem;
+    }
+
+    .footer{
+        margin-top:18px;
+        text-align:center;
+        color:#cbd5e1;
+        font-size:.92rem;
+        padding:14px 10px 8px;
+        opacity:.95;
+    }
+
+    .footer strong{
+        color:#ffffff;
+    }
+
+    .hint{
+        color:var(--muted);
+        font-size:.86rem;
+        margin-top:10px;
+        text-align:center;
+    }
+
+    .mobile-note{
+        display:none;
+        margin-top:10px;
+        color:#cbd5e1;
+        font-size:.85rem;
+        text-align:center;
+    }
+
+    @media (max-width: 1024px){
+        .grid{
+            grid-template-columns:1fr;
+        }
+
+        .stats{
+            width:100%;
+            min-width:0;
+            grid-template-columns:repeat(3,1fr);
+        }
+    }
+
+    @media (max-width: 720px){
+        body{
+            padding:14px;
+        }
+
+        .hero{
+            padding:18px;
+            border-radius:24px;
+        }
+
+        .brand{
+            gap:12px;
+        }
+
+        .logo{
+            width:50px;
+            height:50px;
+            border-radius:16px;
+        }
+
+        .stats{
+            grid-template-columns:1fr 1fr;
+        }
+
+        .stats .stat:last-child{
+            grid-column:1 / -1;
+        }
+
+        .card{
+            padding:16px;
+            border-radius:24px;
+        }
+
+        .card-head{
+            align-items:flex-start;
+        }
+
+        textarea{
+            min-height:240px;
+            font-size:14px;
+            border-radius:18px;
+        }
+
+        .actions{
+            display:grid;
+            grid-template-columns:1fr;
+        }
+
+        button{
+            width:100%;
+            padding:16px 18px;
+            border-radius:16px;
+        }
+
+        .mobile-note{
+            display:block;
+        }
+    }
+
+    @media (max-width: 420px){
+        .stats{
+            grid-template-columns:1fr;
+        }
+
+        .stats .stat:last-child{
+            grid-column:auto;
+        }
+
+        .pill-row{
+            gap:8px;
+        }
+
+        .pill{
+            font-size:.82rem;
+            padding:8px 11px;
+        }
+    }
+</style>
+</head>
+<body>
+    <main class="app">
+        <section class="hero">
+            <div class="hero-top">
+                <div class="brand">
+                    <div class="logo">⚽</div>
+                    <div class="title-wrap">
+                        <h1>Cruzamento de Figurinhas</h1>
+                        <p>
+                            Ferramenta para cruzar suas repetidas com as faltantes do amigo, com normalização inteligente e visual adaptado para celular e computador.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <small>Minhas repetidas</small>
+                        <strong id="mineCount">0</strong>
+                        <span>itens reconhecidos</span>
+                    </div>
+                    <div class="stat">
+                        <small>Faltantes do amigo</small>
+                        <strong id="friendCount">0</strong>
+                        <span>itens reconhecidos</span>
+                    </div>
+                    <div class="stat">
+                        <small>Resultado</small>
+                        <strong id="resultCount">0</strong>
+                        <span>figurinhas cruzadas</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>🔥 Suas repetidas</h2>
+                        <p>Cole aqui sua lista, em qualquer formato compatível.</p>
+                    </div>
+                    <span class="badge">Entrada 1</span>
+                </div>
+                <textarea id="mine" placeholder="Ex.:&#10;FWC 📜: 15, 16&#10;SWE 9&#10;KOR14"></textarea>
+            </div>
+
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>🎯 Faltantes do amigo</h2>
+                        <p>Cole a lista de figurinhas que ele precisa.</p>
+                    </div>
+                    <span class="badge">Entrada 2</span>
+                </div>
+                <textarea id="friend" placeholder="Ex.:&#10;FWC 16&#10;SWE 3, 9&#10;KOR14"></textarea>
+            </div>
+        </section>
+
+        <div class="actions">
+            <button class="btn-primary" onclick="crossStickers()">⚽ Cruzar Figurinhas</button>
+            <button class="btn-ghost" onclick="copyResult()">📋 Copiar Resultado</button>
+            <button class="btn-secondary" onclick="clearAll()">🗑 Limpar</button>
+        </div>
+
+        <p class="mobile-note">Dica: no celular, você pode tocar e segurar no resultado para selecionar também.</p>
+
+        <section class="card result-card">
+            <div class="result-toolbar">
+                <div class="result-title">
+                    <span class="dot"></span>
+                    <span>Resultado</span>
+                </div>
+                <span class="badge" id="resultBadge">Aguardando cruzamento</span>
+            </div>
+
+            <div id="result" class="output-wrap">
+                <div class="empty">O resultado aparecerá aqui após o cruzamento.</div>
+            </div>
+        </section>
+
+        <div class="footer">
+            Desenvolvido por <strong>Frederico Braga</strong> · © 2026
+        </div>
+        <div class="hint">Atalho: pressione <strong>Ctrl + Enter</strong> para cruzar as figurinhas.</div>
+    </main>
+
+<script>
+    const ignoredTerms = [
+        "pg.",
+        "historia",
+        "história",
+        "colecao",
+        "coleção",
+        "bola e paises",
+        "bola e países",
+        "extra stickers",
+        "repetidas",
+        "faltantes"
+    ];
+
+    function stripAccents(text) {
+        return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function normalizeSticker(prefix, number) {
+        return `${prefix.toUpperCase()} ${parseInt(number, 10)}`;
+    }
+
+    function extractStickers(text) {
+        const result = [];
+        const lines = text.split(/\r?\n/);
+
+        for (let rawLine of lines) {
+            let line = rawLine.trim();
+            if (!line) continue;
+
+            const lower = stripAccents(line.toLowerCase());
+
+            if (ignoredTerms.some(term => lower.includes(stripAccents(term)))) {
+                continue;
+            }
+
+            // Caso: FWC 📜: 15, 16
+            // Caso: TUR 🇹🇷: 4, 6, 7
+            if (line.includes(":")) {
+                const [left, right] = line.split(":");
+                const prefixMatch = left.match(/\b([A-Z]{2,6})\b/i);
+
+                if (prefixMatch) {
+                    const prefix = prefixMatch[1];
+                    const numbers = right.match(/\d{1,3}/g);
+                    if (numbers) {
+                        numbers.forEach(number => result.push(normalizeSticker(prefix, number)));
+                    }
+                    continue;
+                }
+            }
+
+            // Caso: KOR14 / SWE 8 / UZN 19
+            const compactMatches = [...line.matchAll(/\b([A-Z]{2,6})\s*(\d{1,3})\b/gi)];
+            compactMatches.forEach(match => {
+                result.push(normalizeSticker(match[1], match[2]));
+            });
+
+            // Extras
+            const extras = [...line.matchAll(/\b(REGU|BRON|PRAT|OURO)\b/gi)];
+            extras.forEach(extra => result.push(extra[1].toUpperCase()));
+        }
+
+        return [...new Set(result)];
+    }
+
+    function groupResults(list) {
+        const groups = {};
+
+        list.forEach(item => {
+            if (item.includes(" ")) {
+                const [prefix, number] = item.split(" ");
+                if (!groups[prefix]) groups[prefix] = [];
+                groups[prefix].push(parseInt(number, 10));
+            } else {
+                if (!groups["EXTRAS"]) groups["EXTRAS"] = [];
+                groups["EXTRAS"].push(item);
+            }
+        });
+
+        return groups;
+    }
+
+    function renderResult(result) {
+        const resultBox = document.getElementById("result");
+        const resultCount = document.getElementById("resultCount");
+        const resultBadge = document.getElementById("resultBadge");
+
+        resultCount.textContent = result.length;
+
+        if (!result.length) {
+            resultBox.innerHTML = `<div class="empty">Nenhuma figurinha encontrada.</div>`;
+            resultBadge.textContent = "Nenhum resultado";
+            return "";
+        }
+
+        const grouped = groupResults(result);
+        let textOutput = "";
+        let total = 0;
+
+        Object.keys(grouped).sort().forEach(country => {
+            const values = grouped[country];
+
+            if (country !== "EXTRAS") {
+                values.sort((a, b) => a - b);
+                textOutput += `${country} ${values.join(", ")}\n`;
+            } else {
+                textOutput += `EXTRAS ${values.join(", ")}\n`;
+            }
+
+            total += values.length;
+        });
+
+        textOutput += `\nTOTAL: ${total} figurinha(s)`;
+
+        resultBadge.textContent = `${total} figurinha(s) cruzada(s)`;
+        resultBox.innerHTML = `<textarea readonly class="output-text" id="outputArea">${textOutput}</textarea>`;
+
+        return textOutput;
+    }
+
+    function crossStickers() {
+        const mineText = document.getElementById("mine").value;
+        const friendText = document.getElementById("friend").value;
+
+        const mine = extractStickers(mineText);
+        const friend = extractStickers(friendText);
+
+        document.getElementById("mineCount").textContent = mine.length;
+        document.getElementById("friendCount").textContent = friend.length;
+
+        if (mine.length === 0) {
+            alert("Insira suas repetidas.");
+            return;
+        }
+
+        if (friend.length === 0) {
+            alert("Insira as faltantes.");
+            return;
+        }
+
+        const friendSet = new Set(friend);
+        const result = mine.filter(item => friendSet.has(item));
+
+        renderResult(result);
+    }
+
+    async function copyResult() {
+        const output = document.getElementById("outputArea");
+        if (!output) {
+            alert("Gere um resultado antes de copiar.");
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(output.value);
+            const badge = document.getElementById("resultBadge");
+            const old = badge.textContent;
+            badge.textContent = "Resultado copiado!";
+            setTimeout(() => badge.textContent = old, 1500);
+        } catch (e) {
+            output.select();
+            document.execCommand("copy");
+            alert("Resultado copiado.");
+        }
+    }
+
+    function clearAll() {
+        document.getElementById("mine").value = "";
+        document.getElementById("friend").value = "";
+        document.getElementById("mineCount").textContent = "0";
+        document.getElementById("friendCount").textContent = "0";
+        document.getElementById("resultCount").textContent = "0";
+        document.getElementById("resultBadge").textContent = "Aguardando cruzamento";
+        document.getElementById("result").innerHTML = `<div class="empty">O resultado aparecerá aqui após o cruzamento.</div>`;
+    }
+
+    document.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.key === "Enter") {
+            crossStickers();
+        }
+    });
+
+    // Contagem instantânea ao digitar
+    function refreshLiveCounts() {
+        document.getElementById("mineCount").textContent = extractStickers(document.getElementById("mine").value).length;
+        document.getElementById("friendCount").textContent = extractStickers(document.getElementById("friend").value).length;
+    }
+
+    document.getElementById("mine").addEventListener("input", refreshLiveCounts);
+    document.getElementById("friend").addEventListener("input", refreshLiveCounts);
+</script>
+</body>
+</html>
