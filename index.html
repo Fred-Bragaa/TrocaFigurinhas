@@ -550,19 +550,47 @@
         ]);
 
         function initializeFirebaseCounters() {
-            const accessRef = db.ref("likes");
-
-            accessRef.on("value", snapshot => {
-                const likeElement = document.getElementById("likeCount");
-
-                if (likeElement) {
-                    likeElement.innerText = snapshot.val() || 0;
-                }
-            });
-
-            accessRef.transaction(current => {
+            const totalAccessRef = db.ref("likes");
+            const uniqueVisitsRef = db.ref("visits");
+        
+            const visitorStorageKey = "figurimatch_unique_visitor_id";
+            const countedStorageKey = "figurimatch_unique_visit_counted";
+        
+            /*
+                Conta todos os acessos.
+                Cada vez que a página abre, soma +1 em likes.
+            */
+            totalAccessRef.transaction(current => {
                 return (current || 0) + 1;
             });
+        
+            /*
+                Verifica se este navegador/dispositivo já recebeu um ID.
+                Se não recebeu, cria um ID anônimo local.
+            */
+            let visitorId = localStorage.getItem(visitorStorageKey);
+        
+            if (!visitorId) {
+                visitorId = crypto.randomUUID
+                    ? crypto.randomUUID()
+                    : `visitor_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        
+                localStorage.setItem(visitorStorageKey, visitorId);
+            }
+        
+            /*
+                Conta acesso único apenas uma vez por navegador/dispositivo.
+                Se já contou antes, não soma novamente em visits.
+            */
+            const alreadyCounted = localStorage.getItem(countedStorageKey);
+        
+            if (!alreadyCounted) {
+                uniqueVisitsRef.transaction(current => {
+                    return (current || 0) + 1;
+                });
+        
+                localStorage.setItem(countedStorageKey, "true");
+            }
         }
 
         function normalizeSticker(prefix, number) {
