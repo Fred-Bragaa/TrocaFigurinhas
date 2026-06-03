@@ -552,10 +552,10 @@
         function initializeFirebaseCounters() {
             const totalAccessRef = db.ref("likes");
             const uniqueVisitsRef = db.ref("visits");
-        
+
             const visitorStorageKey = "figurimatch_unique_visitor_id";
             const countedStorageKey = "figurimatch_unique_visit_counted";
-        
+
             /*
                 Conta todos os acessos.
                 Cada vez que a página abre, soma +1 em likes.
@@ -563,32 +563,32 @@
             totalAccessRef.transaction(current => {
                 return (current || 0) + 1;
             });
-        
+
             /*
                 Verifica se este navegador/dispositivo já recebeu um ID.
                 Se não recebeu, cria um ID anônimo local.
             */
             let visitorId = localStorage.getItem(visitorStorageKey);
-        
+
             if (!visitorId) {
                 visitorId = crypto.randomUUID
                     ? crypto.randomUUID()
                     : `visitor_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-        
+
                 localStorage.setItem(visitorStorageKey, visitorId);
             }
-        
+
             /*
                 Conta acesso único apenas uma vez por navegador/dispositivo.
                 Se já contou antes, não soma novamente em visits.
             */
             const alreadyCounted = localStorage.getItem(countedStorageKey);
-        
+
             if (!alreadyCounted) {
                 uniqueVisitsRef.transaction(current => {
                     return (current || 0) + 1;
                 });
-        
+
                 localStorage.setItem(countedStorageKey, "true");
             }
         }
@@ -601,8 +601,11 @@
             return line
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
-                .replace(/[🇦-🇿]/gu, "")
-                .replace(/[🏴📜]/gu, "")
+                /*
+                    Remove emojis, bandeiras e símbolos especiais.
+                    Mantém letras, números, espaços e pontuações úteis para leitura.
+                */
+                .replace(/[^\w\s,;|:\-()./]/g, " ")
                 .replace(/\./g, " ")
                 .replace(/[;|]/g, ",")
                 .replace(/\s+/g, " ")
@@ -640,10 +643,9 @@
                 "figurinhas repetidas",
                 "repetidas para troca",
                 "estas sao minhas",
-                "estas são minhas",
                 "historia da copa",
-                "história da copa",
-                "Eua Méx Can 26",
+                "eua mex can 26",
+                "feito com album copa"
             ];
 
             return ignoredTerms.some(term => lower.includes(term));
@@ -653,54 +655,126 @@
             return text.replace(/(\d{1,3})\s*\(\s*\d+\s*x\s*\)/gi, "$1");
         }
 
+        function prepareLineForParsing(rawLine) {
+            let line = cleanLine(rawLine);
+
+            if (!line || shouldIgnoreLine(line)) {
+                return "";
+            }
+
+            line = removeQuantityMarkers(line);
+
+            return line
+                .replace(/\s*-\s*/g, " ")
+                .replace(/\s*:\s*/g, " ")
+                .replace(/\s*,\s*/g, ",")
+                .replace(/\s+/g, " ")
+                .trim()
+                .toUpperCase();
+        }
+
+        function parseStandardStickerBlocks(line) {
+            const result = [];
+
+            /*
+                Leitura principal.
+                Aceita formatos como:
+                FWC4
+                FWC 4
+                FWC4, FWC6
+                MEX 1, 2, 3
+                MEX1, MEX2, MEX3
+                SUI5, SUI19
+            */
+            const blockRegex = /\b([A-Z]{2,6})\s*(\d{1,3}(?:\s*,\s*(?:(?:[A-Z]{2,6})\s*)?\d{1,3})*)/g;
+
+            let blockMatch;
+
+            while ((blockMatch = blockRegex.exec(line)) !== null) {
+                const basePrefix = blockMatch[1].toUpperCase();
+                const numbersBlock = blockMatch[2];
+
+                if (!VALID_PREFIXES.has(basePrefix)) {
+                    continue;
+                }
+
+                const itemRegex = /(?:(\b[A-Z]{2,6})\s*)?(\d{1,3})/g;
+                let itemMatch;
+
+                while ((itemMatch = itemRegex.exec(numbersBlock)) !== null) {
+                    const explicitPrefix = itemMatch[1]
+                        ? itemMatch[1].toUpperCase()
+                        : basePrefix;
+
+                    const number = itemMatch[2];
+
+                    if (VALID_PREFIXES.has(explicitPrefix)) {
+                        result.push(normalizeSticker(explicitPrefix, number));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        function parseDescriptiveStickerBlocksAsLastResort(line) {
+            const result = [];
+
+            /*
+                Leitura de último caso.
+                Só é usada quando a leitura principal não encontrou nada na linha.
+
+                Aceita formatos como:
+                FWC (Especiais FWC): 01, 02, 03
+                MEX (Mexico): 1, 2, 4, 5
+                RSA (Africa do Sul): 1, 6, 8
+                CC (Figurinhas Do Refrigerante): 1, 3, 6
+            */
+            const descriptiveRegex = /\b([A-Z]{2,6})\s*\([^)]*\)\s*:?\s*((?:\d{1,3}\s*,?\s*)+)/g;
+
+            let descriptiveMatch;
+
+            while ((descriptiveMatch = descriptiveRegex.exec(line)) !== null) {
+                const prefix = descriptiveMatch[1].toUpperCase();
+                const numbersBlock = descriptiveMatch[2];
+
+                if (!VALID_PREFIXES.has(prefix)) {
+                    continue;
+                }
+
+                const numbers = numbersBlock.match(/\d{1,3}/g) || [];
+
+                numbers.forEach(number => {
+                    result.push(normalizeSticker(prefix, number));
+                });
+            }
+
+            return result;
+        }
+
         function extractStickers(text) {
             const result = [];
             const lines = text.split(/\r?\n/);
 
             lines.forEach(rawLine => {
-                let line = cleanLine(rawLine);
+                const line = prepareLineForParsing(rawLine);
 
-                if (!line || shouldIgnoreLine(line)) {
+                if (!line) {
                     return;
                 }
 
-                line = removeQuantityMarkers(line);
+                let stickersFromLine = parseStandardStickerBlocks(line);
 
-                line = line
-                    .replace(/\s*-\s*/g, " ")
-                    .replace(/\s*:\s*/g, " ")
-                    .replace(/\s*,\s*/g, ",")
-                    .replace(/\s+/g, " ")
-                    .trim()
-                    .toUpperCase();
-
-                const blockRegex = /\b([A-Z]{2,6})\s*(\d{1,3}(?:\s*,\s*(?:(?:[A-Z]{2,6})\s*)?\d{1,3})*)/g;
-
-                let blockMatch;
-
-                while ((blockMatch = blockRegex.exec(line)) !== null) {
-                    const basePrefix = blockMatch[1].toUpperCase();
-                    const numbersBlock = blockMatch[2];
-
-                    if (!VALID_PREFIXES.has(basePrefix)) {
-                        continue;
-                    }
-
-                    const itemRegex = /(?:(\b[A-Z]{2,6})\s*)?(\d{1,3})/g;
-                    let itemMatch;
-
-                    while ((itemMatch = itemRegex.exec(numbersBlock)) !== null) {
-                        const explicitPrefix = itemMatch[1]
-                            ? itemMatch[1].toUpperCase()
-                            : basePrefix;
-
-                        const number = itemMatch[2];
-
-                        if (VALID_PREFIXES.has(explicitPrefix)) {
-                            result.push(normalizeSticker(explicitPrefix, number));
-                        }
-                    }
+                /*
+                    Importante:
+                    Este novo parser entra somente como último caso.
+                    Assim, os formatos antigos continuam tendo prioridade.
+                */
+                if (stickersFromLine.length === 0) {
+                    stickersFromLine = parseDescriptiveStickerBlocksAsLastResort(line);
                 }
+
+                result.push(...stickersFromLine);
             });
 
             return [...new Set(result)];
@@ -764,7 +838,7 @@
 
                 html += `
                     <div class="recommendation-item">
-                        <b>${index + 1}. Pegue ${item.sticker}</b> — ${reason}.
+                        <b>${index + 1}. Pegue ${item.sticker}</b> - ${reason}.
                     </div>
                 `;
             });
