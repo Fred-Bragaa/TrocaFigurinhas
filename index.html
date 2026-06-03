@@ -614,15 +614,36 @@
 
             const ignoredTerms = [
                 "album copa",
-                "repetidas para troca",
-                "feito com",
+                "figurinhas app",
+                "figurinhas copa",
+                "baixe o app",
                 "play.google.com",
+                "apps.apple.com",
                 "https://",
                 "http://",
+                "android:",
+                "ios:",
                 "no total",
                 "se alguem tiver",
                 "chama no privado",
-                "---"
+                "vamos trocar",
+                "somos 26",
+                "pg.",
+                "pg ",
+                "pagina",
+                "────────",
+                "---",
+                "presciso",
+                "preciso",
+                "repetidas",
+                "faltantes",
+                "figurinhas repetidas",
+                "repetidas para troca",
+                "estas sao minhas",
+                "estas são minhas",
+                "historia da copa",
+                "história da copa",
+                "Eua Méx Can 26",
             ];
 
             return ignoredTerms.some(term => lower.includes(term));
@@ -645,54 +666,40 @@
 
                 line = removeQuantityMarkers(line);
 
-                /*
-                    Normaliza separadores comuns:
-                    Cro -4,8,18  -> Cro 4,8,18
-                    bih-15, 10   -> bih 15,10
-                    Nzl- 8,2     -> Nzl 8,2
-                    Usa 15(2x),5 -> Usa 15,5
-                */
                 line = line
                     .replace(/\s*-\s*/g, " ")
                     .replace(/\s*:\s*/g, " ")
                     .replace(/\s*,\s*/g, ",")
                     .replace(/\s+/g, " ")
-                    .trim();
+                    .trim()
+                    .toUpperCase();
 
-                /*
-                    Captura blocos do tipo:
-                    CRO 4,8,18
-                    BIH 15,10
-                    USA 15,5
-                    SUI 19,16
-                    FWC 11
-
-                    Também continua aceitando:
-                    FWC4
-                    SUI5, SUI19
-                    BRA 10
-                */
-                const blockRegex = /\b([A-Z]{2,6})\s*((?:\d{1,3}\s*,?\s*)+)/gi;
+                const blockRegex = /\b([A-Z]{2,6})\s*(\d{1,3}(?:\s*,\s*(?:(?:[A-Z]{2,6})\s*)?\d{1,3})*)/g;
 
                 let blockMatch;
 
                 while ((blockMatch = blockRegex.exec(line)) !== null) {
-                    const prefix = blockMatch[1].toUpperCase();
+                    const basePrefix = blockMatch[1].toUpperCase();
                     const numbersBlock = blockMatch[2];
 
-                    if (!VALID_PREFIXES.has(prefix)) {
+                    if (!VALID_PREFIXES.has(basePrefix)) {
                         continue;
                     }
 
-                    const numbers = numbersBlock.match(/\d{1,3}/g);
+                    const itemRegex = /(?:(\b[A-Z]{2,6})\s*)?(\d{1,3})/g;
+                    let itemMatch;
 
-                    if (!numbers) {
-                        continue;
+                    while ((itemMatch = itemRegex.exec(numbersBlock)) !== null) {
+                        const explicitPrefix = itemMatch[1]
+                            ? itemMatch[1].toUpperCase()
+                            : basePrefix;
+
+                        const number = itemMatch[2];
+
+                        if (VALID_PREFIXES.has(explicitPrefix)) {
+                            result.push(normalizeSticker(explicitPrefix, number));
+                        }
                     }
-
-                    numbers.forEach(number => {
-                        result.push(normalizeSticker(prefix, number));
-                    });
                 }
             });
 
@@ -773,7 +780,8 @@
         function updateCounters() {
             const mine = extractStickers(document.getElementById("mine").value);
             const friend = extractStickers(document.getElementById("friend").value);
-            const result = mine.filter(x => friend.includes(x));
+            const friendSet = new Set(friend);
+            const result = mine.filter(x => friendSet.has(x));
 
             document.getElementById("countMine").innerText = mine.length;
             document.getElementById("countFriend").innerText = friend.length;
@@ -794,7 +802,8 @@
                 return;
             }
 
-            const result = mine.filter(x => friend.includes(x));
+            const friendSet = new Set(friend);
+            const result = mine.filter(x => friendSet.has(x));
 
             renderResult(result);
             updateCounters();
