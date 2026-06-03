@@ -102,23 +102,6 @@
 
         .stat small { color: var(--muted); }
 
-        .public-stats {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-
-        .public-stat-card {
-            background: rgba(15, 23, 42, .82);
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 12px 18px;
-            color: #cbd5e1;
-            font-weight: 700;
-        }
-
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -313,6 +296,54 @@
             text-transform: uppercase;
         }
 
+        .image-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(2, 6, 23, .82);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-popup-overlay.show {
+            display: flex;
+        }
+
+        .image-popup-box {
+            position: relative;
+            max-width: 520px;
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #020617;
+            border: 1px solid rgba(255, 255, 255, .12);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, .45);
+        }
+
+        .image-popup-box img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .image-popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, .86);
+            color: white;
+            font-size: 1.4rem;
+            line-height: 1;
+            z-index: 2;
+        }
+
         @media(max-width:900px) {
             body { padding-bottom: 96px; }
 
@@ -357,6 +388,10 @@
                 justify-content: center;
                 padding: 14px 12px;
                 font-size: .85rem;
+            }
+
+            .image-popup-box {
+                max-width: 92vw;
             }
         }
     </style>
@@ -466,6 +501,16 @@
 
     </div>
 
+    <div id="dailyImagePopup" class="image-popup-overlay">
+        <div class="image-popup-box">
+            <button type="button" class="image-popup-close" onclick="closeDailyImagePopup()">
+                ×
+            </button>
+
+            <img src="imagem.jpg" alt="Imagem promocional FiguriMatch">
+        </div>
+    </div>
+
     <a
         href="https://wa.me/5535997236033?text=Ol%C3%A1!%20Usei%20seu%20sistema%20de%20troca%20de%20figurinhas%20e%20tenho%20interesse%20em%20comprar%20pacotes!"
         class="whatsapp-btn"
@@ -480,267 +525,269 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAjkrUkR6LTXChF51ud0XmSbXyYzPBPw1Q",
-        authDomain: "figurimatch.firebaseapp.com",
-        databaseURL: "https://figurimatch-default-rtdb.firebaseio.com",
-        projectId: "figurimatch",
-        storageBucket: "figurimatch.firebasestorage.app",
-        messagingSenderId: "467634553838",
-        appId: "1:467634553838:web:c63d16fe4d0cf5cde704ff"
-    };
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjkrUkR6LTXChF51ud0XmSbXyYzPBPw1Q",
+            authDomain: "figurimatch.firebaseapp.com",
+            databaseURL: "https://figurimatch-default-rtdb.firebaseio.com",
+            projectId: "figurimatch",
+            storageBucket: "figurimatch.firebasestorage.app",
+            messagingSenderId: "467634553838",
+            appId: "1:467634553838:web:c63d16fe4d0cf5cde704ff"
+        };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    const VALID_PREFIXES = new Set([
-        "ALG", "ARG", "AUS", "AUT", "BEL", "BIH", "BRA", "CAN",
-        "CIV", "COD", "COL", "CPV", "CRO", "CUW", "CZE", "ECU",
-        "EGY", "ENG", "ESP", "FRA", "GER", "GHA", "HAI", "IRN",
-        "IRQ", "JOR", "JPN", "KOR", "KSA", "MAR", "MEX", "NED",
-        "NOR", "NZL", "PAN", "PAR", "POR", "QAT", "RSA", "SCO",
-        "SEN", "SUI", "SWE", "TUN", "TUR", "URU", "USA", "UZB",
-        "FWC", "CC"
-    ]);
+        const VALID_PREFIXES = new Set([
+            "ALG", "ARG", "AUS", "AUT", "BEL", "BIH", "BRA", "CAN",
+            "CIV", "COD", "COL", "CPV", "CRO", "CUW", "CZE", "ECU",
+            "EGY", "ENG", "ESP", "FRA", "GER", "GHA", "HAI", "IRN",
+            "IRQ", "JOR", "JPN", "KOR", "KSA", "MAR", "MEX", "NED",
+            "NOR", "NZL", "PAN", "PAR", "POR", "QAT", "RSA", "SCO",
+            "SEN", "SUI", "SWE", "TUN", "TUR", "URU", "USA", "UZB",
+            "FWC", "CC"
+        ]);
 
-    function initializeFirebaseCounters() {
-        const accessRef = db.ref("likes");
+        function initializeFirebaseCounters() {
+            const accessRef = db.ref("likes");
 
-        accessRef.on("value", snapshot => {
-            const likeElement = document.getElementById("likeCount");
+            accessRef.on("value", snapshot => {
+                const likeElement = document.getElementById("likeCount");
 
-            if (likeElement) {
-                likeElement.innerText = snapshot.val() || 0;
-            }
-        });
-
-        accessRef.transaction(current => {
-            return (current || 0) + 1;
-        });
-    }
-
-    function normalizeSticker(prefix, number) {
-        return `${prefix.toUpperCase()} ${parseInt(number, 10)}`;
-    }
-
-    function cleanLine(line) {
-        return line
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[🇦-🇿]/gu, "")
-            .replace(/[🏴📜]/gu, "")
-            .replace(/\./g, " ")
-            .replace(/[;|]/g, ",")
-            .replace(/\s+/g, " ")
-            .trim();
-    }
-
-    function shouldIgnoreLine(line) {
-        const lower = line.toLowerCase();
-
-        const ignoredTerms = [
-            "album copa",
-            "repetidas para troca",
-            "feito com",
-            "play.google.com",
-            "https://",
-            "http://",
-            "no total",
-            "se alguem tiver",
-            "chama no privado",
-            "---"
-        ];
-
-        return ignoredTerms.some(term => lower.includes(term));
-    }
-
-    function removeQuantityMarkers(text) {
-        return text.replace(/(\d{1,3})\s*\(\s*\d+\s*x\s*\)/gi, "$1");
-    }
-
-    function extractStickers(text) {
-        const result = [];
-        const lines = text.split(/\r?\n/);
-
-        lines.forEach(rawLine => {
-            let line = cleanLine(rawLine);
-
-            if (!line || shouldIgnoreLine(line)) {
-                return;
-            }
-
-            line = removeQuantityMarkers(line);
-
-            const prefixMatch = line.match(/\b([A-Z]{2,6})\b/i);
-
-            if (!prefixMatch) {
-                return;
-            }
-
-            const prefix = prefixMatch[1].toUpperCase();
-
-            if (!VALID_PREFIXES.has(prefix)) {
-                return;
-            }
-
-            const startIndex = prefixMatch.index + prefixMatch[0].length;
-            const afterPrefix = line.slice(startIndex);
-
-            const nums = afterPrefix.match(/\d{1,3}/g);
-
-            if (!nums) {
-                return;
-            }
-
-            nums.forEach(number => {
-                result.push(normalizeSticker(prefix, number));
+                if (likeElement) {
+                    likeElement.innerText = snapshot.val() || 0;
+                }
             });
-        });
 
-        return [...new Set(result)];
-    }
-
-    function groupResults(list) {
-        const groups = {};
-
-        list.forEach(item => {
-            const [prefix, number] = item.split(" ");
-
-            if (!groups[prefix]) {
-                groups[prefix] = [];
-            }
-
-            groups[prefix].push(parseInt(number, 10));
-        });
-
-        return groups;
-    }
-
-    function buildTradeRecommendations(result, faltantes) {
-        const faltantesGrouped = groupResults(faltantes);
-
-        const recommendations = result.map(item => {
-            const [prefix] = item.split(" ");
-
-            const missingCount = faltantesGrouped[prefix]
-                ? faltantesGrouped[prefix].length
-                : 999;
-
-            return {
-                sticker: item,
-                prefix: prefix,
-                missingCount: missingCount
-            };
-        });
-
-        recommendations.sort((a, b) => {
-            if (a.missingCount !== b.missingCount) {
-                return a.missingCount - b.missingCount;
-            }
-
-            return a.sticker.localeCompare(b.sticker);
-        });
-
-        if (recommendations.length === 0) {
-            return "";
+            accessRef.transaction(current => {
+                return (current || 0) + 1;
+            });
         }
 
-        let html = `
-            <div class="recommendations">
-                <h3>Prioridades de troca</h3>
-                <div class="recommendations-list">
-        `;
+        function normalizeSticker(prefix, number) {
+            return `${prefix.toUpperCase()} ${parseInt(number, 10)}`;
+        }
 
-        recommendations.forEach((item, index) => {
-            const reason = item.missingCount === 1
-                ? `fecha <b>${item.prefix}</b>`
-                : `ajuda em <b>${item.prefix}</b>, onde ainda faltam ${item.missingCount} figurinhas`;
+        function cleanLine(line) {
+            return line
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[🇦-🇿]/gu, "")
+                .replace(/[🏴📜]/gu, "")
+                .replace(/\./g, " ")
+                .replace(/[;|]/g, ",")
+                .replace(/\s+/g, " ")
+                .trim();
+        }
+
+        function shouldIgnoreLine(line) {
+            const lower = line.toLowerCase();
+
+            const ignoredTerms = [
+                "album copa",
+                "repetidas para troca",
+                "feito com",
+                "play.google.com",
+                "https://",
+                "http://",
+                "no total",
+                "se alguem tiver",
+                "chama no privado",
+                "---"
+            ];
+
+            return ignoredTerms.some(term => lower.includes(term));
+        }
+
+        function removeQuantityMarkers(text) {
+            return text.replace(/(\d{1,3})\s*\(\s*\d+\s*x\s*\)/gi, "$1");
+        }
+
+        function extractStickers(text) {
+            const result = [];
+            const lines = text.split(/\r?\n/);
+
+            lines.forEach(rawLine => {
+                let line = cleanLine(rawLine);
+
+                if (!line || shouldIgnoreLine(line)) {
+                    return;
+                }
+
+                line = removeQuantityMarkers(line);
+
+                /*
+                    Formatos aceitos:
+                    FWC4
+                    FWC 4
+                    FWC: 4, 6
+                    FWC 4, 6
+                    MEX2
+                    BIH17
+                    SUI5, SUI19
+                    BRA10
+                    🇨🇭 SUI5, SUI19
+                    SWE1, SWE5
+                    ENG1
+                */
+                const regex = /\b([A-Z]{2,6})\s*[:\-]?\s*(\d{1,3})\b/gi;
+
+                let match;
+
+                while ((match = regex.exec(line)) !== null) {
+                    const prefix = match[1].toUpperCase();
+                    const number = match[2];
+
+                    if (VALID_PREFIXES.has(prefix)) {
+                        result.push(normalizeSticker(prefix, number));
+                    }
+                }
+            });
+
+            return [...new Set(result)];
+        }
+
+        function groupResults(list) {
+            const groups = {};
+
+            list.forEach(item => {
+                const [prefix, number] = item.split(" ");
+
+                if (!groups[prefix]) {
+                    groups[prefix] = [];
+                }
+
+                groups[prefix].push(parseInt(number, 10));
+            });
+
+            return groups;
+        }
+
+        function buildTradeRecommendations(result, faltantes) {
+            const faltantesGrouped = groupResults(faltantes);
+
+            const recommendations = result.map(item => {
+                const [prefix] = item.split(" ");
+
+                const missingCount = faltantesGrouped[prefix]
+                    ? faltantesGrouped[prefix].length
+                    : 999;
+
+                return {
+                    sticker: item,
+                    prefix: prefix,
+                    missingCount: missingCount
+                };
+            });
+
+            recommendations.sort((a, b) => {
+                if (a.missingCount !== b.missingCount) {
+                    return a.missingCount - b.missingCount;
+                }
+
+                return a.sticker.localeCompare(b.sticker);
+            });
+
+            if (recommendations.length === 0) {
+                return "";
+            }
+
+            let html = `
+                <div class="recommendations">
+                    <h3>Prioridades de troca</h3>
+                    <div class="recommendations-list">
+            `;
+
+            recommendations.forEach((item, index) => {
+                const reason = item.missingCount === 1
+                    ? `fecha <b>${item.prefix}</b>`
+                    : `ajuda em <b>${item.prefix}</b>, onde ainda faltam ${item.missingCount} figurinhas`;
+
+                html += `
+                    <div class="recommendation-item">
+                        <b>${index + 1}. Pegue ${item.sticker}</b> — ${reason}.
+                    </div>
+                `;
+            });
 
             html += `
-                <div class="recommendation-item">
-                    <b>${index + 1}. Pegue ${item.sticker}</b> — ${reason}.
+                    </div>
                 </div>
             `;
-        });
 
-        html += `
-                </div>
-            </div>
-        `;
-
-        return html;
-    }
-
-    function updateCounters() {
-        const mine = extractStickers(document.getElementById("mine").value);
-        const friend = extractStickers(document.getElementById("friend").value);
-        const result = mine.filter(x => friend.includes(x));
-
-        document.getElementById("countMine").innerText = mine.length;
-        document.getElementById("countFriend").innerText = friend.length;
-        document.getElementById("countResult").innerText = result.length;
-    }
-
-    function crossStickers() {
-        const mine = extractStickers(document.getElementById("mine").value);
-        const friend = extractStickers(document.getElementById("friend").value);
-
-        if (mine.length === 0) {
-            alert("Insira as repetidas");
-            return;
+            return html;
         }
 
-        if (friend.length === 0) {
-            alert("Insira as faltantes");
-            return;
+        function updateCounters() {
+            const mine = extractStickers(document.getElementById("mine").value);
+            const friend = extractStickers(document.getElementById("friend").value);
+            const result = mine.filter(x => friend.includes(x));
+
+            document.getElementById("countMine").innerText = mine.length;
+            document.getElementById("countFriend").innerText = friend.length;
+            document.getElementById("countResult").innerText = result.length;
         }
 
-        const result = mine.filter(x => friend.includes(x));
+        function crossStickers() {
+            const mine = extractStickers(document.getElementById("mine").value);
+            const friend = extractStickers(document.getElementById("friend").value);
 
-        renderResult(result);
-        updateCounters();
+            if (mine.length === 0) {
+                alert("Insira as repetidas");
+                return;
+            }
 
-        setTimeout(() => {
-            document.getElementById("result").scrollIntoView({
-                behavior: "smooth",
-                block: "start"
+            if (friend.length === 0) {
+                alert("Insira as faltantes");
+                return;
+            }
+
+            const result = mine.filter(x => friend.includes(x));
+
+            renderResult(result);
+            updateCounters();
+
+            setTimeout(() => {
+                document.getElementById("result").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }, 150);
+        }
+
+        function renderResult(result) {
+            const box = document.getElementById("result");
+            const faltantes = extractStickers(document.getElementById("friend").value);
+
+            if (result.length === 0) {
+                box.innerHTML = `
+                    <div class="result-box">
+                        <div class="result-header">
+                            <h3>Trocas possíveis</h3>
+                        </div>
+
+                        <div style="text-align:center;color:#94a3b8;padding:40px;">
+                            Nenhuma figurinha encontrada
+                        </div>
+                    </div>
+                `;
+
+                return;
+            }
+
+            const grouped = groupResults(result);
+
+            let text = "";
+            let total = 0;
+
+            Object.keys(grouped).sort().forEach(country => {
+                grouped[country].sort((a, b) => a - b);
+                text += `${country} ${grouped[country].join(", ")}\n`;
+                total += grouped[country].length;
             });
-        }, 150);
-    }
 
-    function renderResult(result) {
-        const box = document.getElementById("result");
-        const faltantes = extractStickers(document.getElementById("friend").value);
-
-        if (result.length === 0) {
-            box.innerHTML = `
-                <div class="result-box">
-                    <div class="result-header">
-                        <h3>Trocas possíveis</h3>
-                    </div>
-
-                    <div style="text-align:center;color:#94a3b8;padding:40px;">
-                        Nenhuma figurinha encontrada
-                    </div>
-                </div>
-            `;
-
-            return;
-        }
-
-        const grouped = groupResults(result);
-
-        let text = "";
-        let total = 0;
-
-        Object.keys(grouped).sort().forEach(country => {
-            grouped[country].sort((a, b) => a - b);
-            text += `${country} ${grouped[country].join(", ")}\n`;
-            total += grouped[country].length;
-        });
-
-        text += `
+            text += `
 
 TOTAL: ${total} figurinha(s)
 
@@ -751,75 +798,117 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
 
 `;
 
-        const recommendationsHtml = buildTradeRecommendations(result, faltantes);
+            const recommendationsHtml = buildTradeRecommendations(result, faltantes);
 
-        box.innerHTML = `
-            <div class="result-box">
-                <div class="result-header">
-                    <h3>Trocas possíveis</h3>
+            box.innerHTML = `
+                <div class="result-box">
+                    <div class="result-header">
+                        <h3>Trocas possíveis</h3>
 
-                    <button type="button" onclick="copyResult(this)" class="primary">
-                        Copiar Resultado
-                    </button>
+                        <button type="button" onclick="copyResult(this)" class="primary">
+                            Copiar Resultado
+                        </button>
+                    </div>
+
+                    <textarea readonly id="output" class="output">${text}</textarea>
                 </div>
 
-                <textarea readonly id="output" class="output">${text}</textarea>
-            </div>
-
-            ${recommendationsHtml}
-        `;
-    }
-
-    async function copyResult(button) {
-        try {
-            await navigator.clipboard.writeText(
-                document.getElementById("output").value
-            );
-
-            button.innerText = "Copiado";
-
-            setTimeout(() => {
-                button.innerText = "Copiar Resultado";
-            }, 1200);
-        } catch {
-            alert("Não foi possível copiar o resultado.");
+                ${recommendationsHtml}
+            `;
         }
-    }
 
-    async function pasteText(target) {
-        try {
-            const text = await navigator.clipboard.readText();
-            const field = document.getElementById(target);
+        async function copyResult(button) {
+            try {
+                await navigator.clipboard.writeText(
+                    document.getElementById("output").value
+                );
 
-            field.value = field.value
-                ? field.value + "\n" + text
-                : text;
+                button.innerText = "Copiado";
+
+                setTimeout(() => {
+                    button.innerText = "Copiar Resultado";
+                }, 1200);
+            } catch {
+                alert("Não foi possível copiar o resultado.");
+            }
+        }
+
+        async function pasteText(target) {
+            try {
+                const text = await navigator.clipboard.readText();
+                const field = document.getElementById(target);
+
+                field.value = field.value
+                    ? field.value + "\n" + text
+                    : text;
+
+                updateCounters();
+            } catch {
+                alert("Permita acesso à área de transferência");
+            }
+        }
+
+        function clearAll() {
+            document.getElementById("mine").value = "";
+            document.getElementById("friend").value = "";
+
+            document.getElementById("result").innerHTML = `
+                <div class="result-box">
+                    Resultado aparecerá aqui
+                </div>
+            `;
 
             updateCounters();
-        } catch {
-            alert("Permita acesso à área de transferência");
         }
-    }
 
-    function clearAll() {
-        document.getElementById("mine").value = "";
-        document.getElementById("friend").value = "";
+        function getTodayKey() {
+            const today = new Date();
 
-        document.getElementById("result").innerHTML = `
-            <div class="result-box">
-                Resultado aparecerá aqui
-            </div>
-        `;
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
 
+            return `${year}-${month}-${day}`;
+        }
+
+        function showDailyImagePopup() {
+            const storageKey = "figurimatch_popup_last_view";
+            const oneHourInMilliseconds = 60 * 60 * 1000;
+            const now = Date.now();
+
+            const lastView = Number(localStorage.getItem(storageKey) || 0);
+
+            if (lastView && now - lastView < oneHourInMilliseconds) {
+                return;
+            }
+
+            const popup = document.getElementById("dailyImagePopup");
+
+            if (!popup) {
+                return;
+            }
+
+            popup.classList.add("show");
+
+            localStorage.setItem(storageKey, String(now));
+        }
+
+        function closeDailyImagePopup() {
+            const popup = document.getElementById("dailyImagePopup");
+
+            if (popup) {
+                popup.classList.remove("show");
+            }
+        }
+
+        document.getElementById("mine").addEventListener("input", updateCounters);
+        document.getElementById("friend").addEventListener("input", updateCounters);
+
+        document.addEventListener("DOMContentLoaded", showDailyImagePopup);
+
+        initializeFirebaseCounters();
         updateCounters();
-    }
-
-    document.getElementById("mine").addEventListener("input", updateCounters);
-    document.getElementById("friend").addEventListener("input", updateCounters);
-
-    initializeFirebaseCounters();
-    updateCounters();
-</script>
+    </script>
 </body>
 
 </html>
