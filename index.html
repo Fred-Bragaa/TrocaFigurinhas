@@ -646,30 +646,53 @@
                 line = removeQuantityMarkers(line);
 
                 /*
-                    Formatos aceitos:
-                    FWC4
-                    FWC 4
-                    FWC: 4, 6
-                    FWC 4, 6
-                    MEX2
-                    BIH17
-                    SUI5, SUI19
-                    BRA10
-                    🇨🇭 SUI5, SUI19
-                    SWE1, SWE5
-                    ENG1
+                    Normaliza separadores comuns:
+                    Cro -4,8,18  -> Cro 4,8,18
+                    bih-15, 10   -> bih 15,10
+                    Nzl- 8,2     -> Nzl 8,2
+                    Usa 15(2x),5 -> Usa 15,5
                 */
-                const regex = /\b([A-Z]{2,6})\s*[:\-]?\s*(\d{1,3})\b/gi;
+                line = line
+                    .replace(/\s*-\s*/g, " ")
+                    .replace(/\s*:\s*/g, " ")
+                    .replace(/\s*,\s*/g, ",")
+                    .replace(/\s+/g, " ")
+                    .trim();
 
-                let match;
+                /*
+                    Captura blocos do tipo:
+                    CRO 4,8,18
+                    BIH 15,10
+                    USA 15,5
+                    SUI 19,16
+                    FWC 11
 
-                while ((match = regex.exec(line)) !== null) {
-                    const prefix = match[1].toUpperCase();
-                    const number = match[2];
+                    Também continua aceitando:
+                    FWC4
+                    SUI5, SUI19
+                    BRA 10
+                */
+                const blockRegex = /\b([A-Z]{2,6})\s*((?:\d{1,3}\s*,?\s*)+)/gi;
 
-                    if (VALID_PREFIXES.has(prefix)) {
-                        result.push(normalizeSticker(prefix, number));
+                let blockMatch;
+
+                while ((blockMatch = blockRegex.exec(line)) !== null) {
+                    const prefix = blockMatch[1].toUpperCase();
+                    const numbersBlock = blockMatch[2];
+
+                    if (!VALID_PREFIXES.has(prefix)) {
+                        continue;
                     }
+
+                    const numbers = numbersBlock.match(/\d{1,3}/g);
+
+                    if (!numbers) {
+                        continue;
+                    }
+
+                    numbers.forEach(number => {
+                        result.push(normalizeSticker(prefix, number));
+                    });
                 }
             });
 
