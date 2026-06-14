@@ -813,13 +813,6 @@
                 };
             });
 
-            recommendations.sort((a, b) => {
-                if (a.missingCount !== b.missingCount) {
-                    return a.missingCount - b.missingCount;
-                }
-
-                return a.sticker.localeCompare(b.sticker);
-            });
 
             if (recommendations.length === 0) {
                 return "";
@@ -915,8 +908,7 @@
             let text = `Trocas possíveis:\n\n`;
             let total = 0;
 
-            Object.keys(grouped).sort().forEach(country => {
-                grouped[country].sort((a, b) => a - b);
+            Object.keys(grouped).forEach(country => {
                 text += `${country} ${grouped[country].join(", ")}\n`;
                 total += grouped[country].length;
             });
