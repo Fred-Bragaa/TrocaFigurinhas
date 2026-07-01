@@ -442,9 +442,15 @@
         <div class="grid">
 
             <div class="card">
-                <button type="button" class="paste" onclick="pasteText('mine')">
-                    Colar
-                </button>
+                <div style="position:absolute;right:20px;top:20px;display:flex;gap:8px;">
+                    <button type="button" class="paste" style="position:static;" onclick="pasteText('mine')">
+                        Colar
+                    </button>
+                
+                    <button type="button" class="paste clear-field" style="position:static;background:#334155;" onclick="clearField('mine')">
+                        Limpar
+                    </button>
+                </div>
 
                 <h2>Repetidas</h2>
 
@@ -452,9 +458,15 @@
             </div>
 
             <div class="card">
-                <button type="button" class="paste" onclick="pasteText('friend')">
-                    Colar
-                </button>
+                <div style="position:absolute;right:20px;top:20px;display:flex;gap:8px;">
+                    <button type="button" class="paste" style="position:static;" onclick="pasteText('friend')">
+                        Colar
+                    </button>
+                
+                    <button type="button" class="paste clear-field" style="position:static;background:#334155;" onclick="clearField('friend')">
+                        Limpar
+                    </button>
+                </div>
 
                 <h2>Faltantes</h2>
 
@@ -976,6 +988,19 @@ https://fred-bragaa.github.io/TrocaFigurinhas/
             }
         }
 
+
+        function clearField(target) {
+            document.getElementById(target).value = "";
+        
+            document.getElementById("result").innerHTML = `
+                <div class="result-box">
+                    Resultado aparecerá aqui
+                </div>
+            `;
+        
+            updateCounters();
+        }
+        
         function clearAll() {
             document.getElementById("mine").value = "";
             document.getElementById("friend").value = "";
